@@ -10,3 +10,4 @@ build/
 logs_test*/
 *.log
 logs
+.DS_Store
