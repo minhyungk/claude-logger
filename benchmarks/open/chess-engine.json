@@ -1,0 +1,6 @@
+{
+  "name": "chess-engine",
+  "type": "open",
+  "prompt": "Implement a CLI-based chess engine in Python that uses the Minimax algorithm with Alpha-Beta Pruning, allowing a player to take turns against the AI in a full chess game.",
+  "description": "Tests implementation of game tree search algorithms and chess rules"
+}

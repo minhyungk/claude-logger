@@ -1,0 +1,6 @@
+{
+  "name": "roguelike-dungeon",
+  "type": "open",
+  "prompt": "Write a CLI-based roguelike game in Python that uses a random map generation algorithm to create grid dungeons, where the player moves around, fights monsters, and picks up items.",
+  "description": "Tests procedural generation and game loop design"
+}

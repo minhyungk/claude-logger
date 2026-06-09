@@ -1,0 +1,6 @@
+{
+  "name": "static-site-generator",
+  "type": "open",
+  "prompt": "Write a CLI tool that reads markdown files from a specified directory and batch-converts them into static HTML web pages with readable CSS styling applied.",
+  "description": "Tests file I/O, markdown processing, and template generation"
+}

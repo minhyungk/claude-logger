@@ -1,0 +1,6 @@
+{
+  "name": "tetris-html5",
+  "type": "open",
+  "prompt": "Write a complete Tetris game playable in the browser using only HTML5 Canvas and vanilla JavaScript. The entire game code must be in a single HTML file.",
+  "description": "Tests browser game development with Canvas API"
+}

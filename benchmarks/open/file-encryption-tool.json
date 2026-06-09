@@ -1,0 +1,6 @@
+{
+  "name": "file-encryption-tool",
+  "type": "open",
+  "prompt": "Implement a CLI program that takes a password from the user and encrypts a specified local text file into a binary file by emulating AES algorithm principles, and also decrypts it back.",
+  "description": "Tests block cipher implementation and file handling"
+}

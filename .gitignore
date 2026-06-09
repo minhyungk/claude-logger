@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+.venv/
+workspaces/
+*.egg-info/
+dist/
+build/
+.env
+.claude/
+logs_test*/
+*.log

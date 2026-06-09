@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Logger Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <header>
+        <h1><span class="live-dot"></span>Claude Logger</h1>
+        <div id="summary-bar">
+            <span id="stat-calls">-- calls</span>
+            <span id="stat-cost">$--</span>
+            <span id="stat-tokens">-- tokens</span>
+            <span id="stat-latency">-- ms avg</span>
+        </div>
+    </header>
+
+    <main>
+        <aside id="session-list">
+            <h2>Sessions</h2>
+            <div id="sessions-container"></div>
+        </aside>
+
+        <section id="session-detail">
+            <div id="detail-placeholder">Select a session to view details</div>
+            <div id="detail-content" class="hidden">
+                <h2 id="detail-title"></h2>
+
+                <div class="summary-cards">
+                    <div class="summary-card">
+                        <div class="label">Total Tokens</div>
+                        <div class="value tokens" id="session-tokens">--</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="label">Total Cost</div>
+                        <div class="value cost" id="session-cost">--</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="label">Avg Latency</div>
+                        <div class="value latency" id="session-latency">--</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="label">API Calls</div>
+                        <div class="value" id="session-calls">--</div>
+                    </div>
+                </div>
+
+                <div class="call-timeline">
+                    <h3>Call Timeline</h3>
+                    <div id="calls-container"></div>
+                </div>
+
+                <div class="charts-grid">
+                    <div class="chart-container">
+                        <h3>Token Usage per Call</h3>
+                        <canvas id="token-chart" width="600" height="200"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h3>Latency (ms)</h3>
+                        <canvas id="latency-chart" width="600" height="200"></canvas>
+                    </div>
+                </div>
+
+                <div id="workspace-section" class="workspace-section hidden">
+                    <h3>Generated Output</h3>
+                    <div class="workspace-grid">
+                        <div class="workspace-tree">
+                            <div class="detail-label">File Tree</div>
+                            <pre id="workspace-tree"></pre>
+                        </div>
+                        <div class="workspace-preview">
+                            <div class="detail-label">Preview</div>
+                            <pre id="workspace-file-content">Click a file to preview</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="call-modal" class="modal hidden">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <h2 id="modal-title">Call Detail</h2>
+            <pre id="modal-body"></pre>
+        </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>

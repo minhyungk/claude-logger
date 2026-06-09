@@ -1,0 +1,6 @@
+{
+  "name": "pathfinding-visualizer",
+  "type": "open",
+  "prompt": "Using HTML5 Canvas, create a visualization tool in a single file that generates a random grid map and shows Dijkstra and A* algorithms finding the destination with real-time animation.",
+  "description": "Tests graph algorithm implementation and browser animation"
+}

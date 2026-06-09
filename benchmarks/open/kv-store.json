@@ -1,0 +1,6 @@
+{
+  "name": "kv-store",
+  "type": "open",
+  "prompt": "Build a mini key-value store using in-memory data structures that supports Redis core commands (SET, GET, DEL, EXPIRE with TTL) over a TCP socket interface.",
+  "description": "Tests network programming and data structure design"
+}

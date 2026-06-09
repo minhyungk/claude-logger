@@ -1,0 +1,6 @@
+{
+  "name": "rsa-encryption",
+  "type": "open",
+  "prompt": "Implement an RSA encryption engine in Python without using any external cryptography libraries. Code the mathematical foundations directly (prime generation, extended Euclidean algorithm) to perform key generation, encryption, and decryption.",
+  "description": "Tests number theory and cryptographic algorithm implementation"
+}

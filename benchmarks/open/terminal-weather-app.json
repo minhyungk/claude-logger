@@ -1,0 +1,6 @@
+{
+  "name": "terminal-weather-app",
+  "type": "open",
+  "prompt": "Write an app that takes a city name as an argument and displays the current temperature and weather information in a formatted text table in the terminal. Include mock external weather API (e.g., OpenWeatherMap) endpoint call code.",
+  "description": "Tests API integration and CLI output formatting"
+}

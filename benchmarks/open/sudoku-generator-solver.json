@@ -1,0 +1,6 @@
+{
+  "name": "sudoku-generator-solver",
+  "type": "open",
+  "prompt": "Implement a Sudoku puzzle generator and solver program using the backtracking algorithm. It should randomly generate puzzles with a unique solution and then automatically solve them.",
+  "description": "Tests constraint satisfaction and backtracking algorithms"
+}

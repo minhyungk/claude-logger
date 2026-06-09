@@ -1,0 +1,6 @@
+{
+  "name": "huffman-compression",
+  "type": "open",
+  "prompt": "Implement a Huffman coding algorithm that compresses plain text characters into binary data using a frequency-based tree, and decompresses it back to the original text.",
+  "description": "Tests tree construction and bitwise encoding"
+}

@@ -1,0 +1,6 @@
+{
+  "name": "simple-shell",
+  "type": "open",
+  "prompt": "Implement a custom terminal shell program in Python that supports command execution, pipes (|), and I/O redirection (< and >).",
+  "description": "Tests systems programming and process management"
+}

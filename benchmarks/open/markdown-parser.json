@@ -1,0 +1,6 @@
+{
+  "name": "markdown-parser",
+  "type": "open",
+  "prompt": "Write a parser engine that uses regex to parse markdown text containing # headings, **bold**, and - lists, converting it into standard HTML tag strings.",
+  "description": "Tests text parsing and string transformation"
+}
