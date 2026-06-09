@@ -170,6 +170,75 @@ aside h2 {
     margin-bottom: 12px;
 }
 
+.call-header-row {
+    display: flex;
+    align-items: center;
+    padding: 8px 16px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px 8px 0 0;
+    margin-bottom: -1px;
+    gap: 16px;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    color: #64748b;
+    font-weight: 700;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.call-col-index {
+    min-width: 28px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.call-col-meta {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.call-col-preview {
+    flex: 1;
+    min-width: 0;
+}
+
+.call-col-badges {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.call-col-tokens, .call-col-cost, .call-col-latency, .call-col-stop {
+    white-space: nowrap;
+    font-family: "SF Mono", "Fira Code", monospace;
+}
+
+.call-col-tokens { width: 64px; text-align: right; }
+.call-col-cost { width: 72px; text-align: right; }
+.call-col-latency { width: 60px; text-align: right; }
+.call-col-stop { width: 70px; text-align: center; }
+.call-col-expand { width: 14px; }
+
+.call-header-row .sortable {
+    cursor: pointer;
+    user-select: none;
+}
+
+.call-header-row .sortable:hover {
+    color: #3b82f6;
+}
+
+.call-header-row .sortable.active {
+    color: #1e40af;
+}
+
 .call-row {
     background: #fff;
     border: 1px solid #e2e8f0;
@@ -177,6 +246,11 @@ aside h2 {
     margin-bottom: 8px;
     overflow: hidden;
     transition: box-shadow 0.15s;
+}
+
+.call-row:first-of-type {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
 }
 
 .call-row:hover {

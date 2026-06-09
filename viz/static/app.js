@@ -1,6 +1,8 @@
 let currentSession = null;
 let pollInterval = null;
 let lastCallCount = 0;
+let sortBy = 'index';
+let sortAsc = true;
 
 async function init() {
     await loadSummary();
@@ -62,10 +64,24 @@ async function loadSessions() {
 async function selectSession(sessionId) {
     currentSession = sessionId;
     lastCallCount = 0;
+    sortBy = 'index';
+    sortAsc = true;
     document.querySelectorAll('.session-card').forEach(c => c.classList.remove('active'));
     const active = document.querySelector(`.session-card[data-id="${sessionId}"]`);
     if (active) active.classList.add('active');
     await refreshSession(sessionId);
+}
+
+function sortCalls(column) {
+    if (sortBy === column) {
+        sortAsc = !sortAsc;
+    } else {
+        sortBy = column;
+        sortAsc = true;
+    }
+    if (currentSession) {
+        refreshSession(currentSession);
+    }
 }
 
 async function refreshSession(sessionId) {
@@ -100,7 +116,52 @@ function renderCallTimeline(calls, sessionId) {
     const container = document.getElementById('calls-container');
     container.innerHTML = '';
 
-    for (const call of calls) {
+    const header = document.createElement('div');
+    header.className = 'call-header-row';
+    header.innerHTML = `
+        <span class="call-col-index sortable ${sortBy === 'index' ? 'active' : ''}" onclick="sortCalls('index')">
+            #${sortBy === 'index' ? (sortAsc ? '↑' : '↓') : ''}
+        </span>
+        <div class="call-col-meta">
+            <span class="call-col-preview">Response</span>
+            <div class="call-col-badges">
+                <span class="call-col-tokens sortable ${sortBy === 'tokens' ? 'active' : ''}" onclick="event.stopPropagation(); sortCalls('tokens')">
+                    Tok${sortBy === 'tokens' ? (sortAsc ? '↑' : '↓') : ''}
+                </span>
+                <span class="call-col-cost sortable ${sortBy === 'cost' ? 'active' : ''}" onclick="event.stopPropagation(); sortCalls('cost')">
+                    Cost${sortBy === 'cost' ? (sortAsc ? '↑' : '↓') : ''}
+                </span>
+                <span class="call-col-latency sortable ${sortBy === 'latency' ? 'active' : ''}" onclick="event.stopPropagation(); sortCalls('latency')">
+                    Lat${sortBy === 'latency' ? (sortAsc ? '↑' : '↓') : ''}
+                </span>
+                <span class="call-col-stop">Stop</span>
+            </div>
+        </div>
+        <span class="call-col-expand"></span>
+    `;
+    container.appendChild(header);
+
+    const sorted = [...calls].sort((a, b) => {
+        let aVal, bVal;
+        if (sortBy === 'index') {
+            aVal = a.meta?.call_index || 0;
+            bVal = b.meta?.call_index || 0;
+        } else if (sortBy === 'tokens') {
+            const aTokens = a.tokens || {};
+            const bTokens = b.tokens || {};
+            aVal = (aTokens.input_tokens || 0) + (aTokens.output_tokens || 0);
+            bVal = (bTokens.input_tokens || 0) + (bTokens.output_tokens || 0);
+        } else if (sortBy === 'cost') {
+            aVal = a.cost?.total_cost || 0;
+            bVal = b.cost?.total_cost || 0;
+        } else if (sortBy === 'latency') {
+            aVal = a.performance?.latency_ms || 0;
+            bVal = b.performance?.latency_ms || 0;
+        }
+        return sortAsc ? aVal - bVal : bVal - aVal;
+    });
+
+    for (const call of sorted) {
         const idx = call.meta?.call_index || '?';
         const tokens = call.tokens || {};
         const totalTok = (tokens.input_tokens || 0) + (tokens.output_tokens || 0);
