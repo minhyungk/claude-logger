@@ -136,26 +136,44 @@ git apply /eval/test.patch || echo "Warning: test patch did not apply, using exi
 
         python_version = self._infer_python_version()
 
-        dockerfile = eval_dir / "Dockerfile"
-        docker_content = f"""FROM python:{python_version}-slim
-RUN apt-get update && apt-get install -y git && apt-get clean
+        # Try to use official SWE-bench environment image if available
+        swebench_image = f"ghcr.io/swe-bench/swe-bench:{self._instance_id}"
+        check_official = subprocess.run(
+            ["docker", "pull", swebench_image],
+            capture_output=True,
+            timeout=60,
+        )
+
+        if check_official.returncode == 0:
+            # Use official pre-built image
+            print(f"  Using official SWE-bench image: {swebench_image}")
+            image_name = swebench_image
+            # Copy modified code into the container
+            # Will mount the repo directory at runtime
+        else:
+            # Build custom image with proper build tools
+            print(f"  Building custom image (official image not found)")
+            dockerfile = eval_dir / "Dockerfile"
+            docker_content = f"""FROM python:{python_version}
+RUN apt-get update && apt-get install -y git build-essential gcc g++ make && apt-get clean
 WORKDIR /testbed
 COPY repo /testbed
-RUN pip install --no-cache-dir -e . || pip install --no-cache-dir -r requirements.txt || true
-RUN pip install --no-cache-dir pytest pytest-cov || true
+RUN pip install --no-cache-dir -U pip setuptools wheel
+RUN pip install --no-cache-dir -e .[test] || pip install --no-cache-dir -e . || pip install --no-cache-dir -r requirements.txt || true
+RUN pip install --no-cache-dir pytest pytest-cov pytest-astropy hypothesis || true
 """
-        dockerfile.write_text(docker_content)
+            dockerfile.write_text(docker_content)
 
-        image_name = f"swebench-{self._instance_id.replace('/', '-').lower()}"
-        build_result = subprocess.run(
-            ["docker", "build", "-t", image_name, "."],
-            cwd=str(eval_dir),
-            capture_output=True,
-            timeout=300,
-        )
-        if build_result.returncode != 0:
-            print(f"  [ERROR] Docker build failed: {build_result.stderr.decode()[:200]}")
-            return 0.0
+            image_name = f"swebench-{self._instance_id.replace('/', '-').lower()}"
+            build_result = subprocess.run(
+                ["docker", "build", "-t", image_name, "."],
+                cwd=str(eval_dir),
+                capture_output=True,
+                timeout=600,  # Increased timeout for building
+            )
+            if build_result.returncode != 0:
+                print(f"  [ERROR] Docker build failed: {build_result.stderr.decode()[:500]}")
+                return 0.0
 
         run_result = subprocess.run(
             [
@@ -191,6 +209,9 @@ RUN pip install --no-cache-dir pytest pytest-cov || true
             return "3.8"
         elif "flask" in repo_lower or "requests" in repo_lower:
             return "3.9"
+        elif "astropy" in repo_lower:
+            # astropy uses typing.Self which requires Python 3.11+
+            return "3.11"
         elif "sympy" in repo_lower or "matplotlib" in repo_lower:
             return "3.10"
         elif "sklearn" in repo_lower or "scikit" in repo_lower:
