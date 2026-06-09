@@ -9,3 +9,4 @@ build/
 .claude/
 logs_test*/
 *.log
+logs

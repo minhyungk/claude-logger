@@ -30,7 +30,7 @@ class Benchmark(ABC):
     def get_working_directory(self) -> Optional[Path]:
         return None
 
-    def setup(self) -> None:
+    def setup(self, workspace_base: Optional[Path] = None) -> None:
         pass
 
     def score(self, session_dir: Path) -> Optional[float]:

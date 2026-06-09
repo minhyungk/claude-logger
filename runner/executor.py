@@ -20,12 +20,12 @@ class BenchmarkExecutor:
         session_id = self._generate_session_id(benchmark.name)
         await self._set_proxy_session(session_id)
 
-        benchmark.setup()
-
         session_dir = self.log_dir / f"session_{session_id}"
         session_dir.mkdir(parents=True, exist_ok=True)
         workspace_dir = session_dir / "workspace"
         workspace_dir.mkdir(exist_ok=True)
+
+        benchmark.setup(workspace_base=workspace_dir)
 
         work_dir = benchmark.get_working_directory()
         if work_dir is not None:

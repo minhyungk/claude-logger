@@ -1,6 +1,6 @@
 {
   "name": "regex-engine",
   "type": "open",
-  "prompt": "Implement a regex matching engine from scratch in Python without using any external libraries (including re). Build an NFA (Nondeterministic Finite Automaton) that supports basic metacharacters such as *, +, and ?.",
+  "prompt": "Implement a regex matching engine from scratch in Python without using any external libraries (including re). Build an NFA (Nondeterministic Finite Automaton) that supports basic metacharacters such as *, +, and ?. Refer to online resources",
   "description": "Tests understanding of automata theory and pattern matching"
 }

@@ -8,6 +8,7 @@ from aiohttp import web
 
 from .logger import CallLogger
 from .sse_parser import accumulate_response
+from .port_utils import find_available_port
 
 
 BEDROCK_HOST = "bedrock-runtime.us-east-1.amazonaws.com"
@@ -60,6 +61,9 @@ class BedrockProxyServer:
 
         model_id = request.match_info.get("model_id", "unknown")
 
+        # Extract session ID from custom header if present
+        session_id = request.headers.get("X-Session-ID", self.current_session_id)
+
         headers = {}
         for key, value in request.headers.items():
             lower = key.lower()
@@ -75,15 +79,15 @@ class BedrockProxyServer:
 
         if is_streaming:
             return await self._handle_streaming(
-                client, target_url, headers, body, request_data, request, model_id, start_time, timestamp
+                client, target_url, headers, body, request_data, request, model_id, start_time, timestamp, session_id
             )
         else:
             return await self._handle_non_streaming(
-                client, target_url, headers, body, request_data, model_id, start_time, timestamp
+                client, target_url, headers, body, request_data, model_id, start_time, timestamp, session_id
             )
 
     async def _handle_streaming(
-        self, client, target_url, headers, body, request_data, request, model_id, start_time, timestamp
+        self, client, target_url, headers, body, request_data, request, model_id, start_time, timestamp, session_id
     ) -> web.StreamResponse:
         async with client.post(target_url, headers=headers, data=body) as upstream:
             response = web.StreamResponse(status=upstream.status)
@@ -109,9 +113,13 @@ class BedrockProxyServer:
         except Exception:
             response_data = {"_parse_error": True, "_raw_size": sum(len(c) for c in accumulated_chunks)}
 
-        call_index = self._next_call_index()
+        # Use session-specific counter
+        self.call_counters.setdefault(session_id, 0)
+        self.call_counters[session_id] += 1
+        call_index = self.call_counters[session_id]
+
         await self.logger.log_call(
-            self.current_session_id,
+            session_id,
             call_index,
             self._normalize_request(request_data, model_id),
             response_data,
@@ -120,7 +128,7 @@ class BedrockProxyServer:
         return response
 
     async def _handle_non_streaming(
-        self, client, target_url, headers, body, request_data, model_id, start_time, timestamp
+        self, client, target_url, headers, body, request_data, model_id, start_time, timestamp, session_id
     ) -> web.Response:
         async with client.post(target_url, headers=headers, data=body) as upstream:
             response_body = await upstream.read()
@@ -131,9 +139,13 @@ class BedrockProxyServer:
             except json.JSONDecodeError:
                 response_data = {}
 
-            call_index = self._next_call_index()
+            # Use session-specific counter
+            self.call_counters.setdefault(session_id, 0)
+            self.call_counters[session_id] += 1
+            call_index = self.call_counters[session_id]
+
             await self.logger.log_call(
-                self.current_session_id,
+                session_id,
                 call_index,
                 self._normalize_request(request_data, model_id),
                 response_data,
@@ -246,6 +258,16 @@ class BedrockProxyServer:
         app = self.create_app()
         runner = web.AppRunner(app)
         await runner.setup()
+
+        # Try to find an available port starting from the requested port
+        available_port = find_available_port(self.port)
+        if available_port is None:
+            raise RuntimeError(f"Could not find available port starting from {self.port}")
+
+        if available_port != self.port:
+            print(f"Port {self.port} is in use, using port {available_port} instead")
+            self.port = available_port
+
         site = web.TCPSite(runner, "127.0.0.1", self.port)
         await site.start()
         return runner
