@@ -165,7 +165,16 @@ RUN pip install --no-cache-dir -e . || pip install --no-cache-dir -r requirement
             timeout=300,
         )
 
+        # Save test output for debugging
+        test_output_file = eval_dir / "test_output.txt"
+        test_output_file.write_text(
+            f"=== STDOUT ===\n{run_result.stdout.decode()}\n\n=== STDERR ===\n{run_result.stderr.decode()}"
+        )
+
         subprocess.run(["docker", "rmi", image_name], capture_output=True, timeout=30)
+
+        if run_result.returncode != 0:
+            print(f"  [INFO] Tests failed (exit code {run_result.returncode}). Output saved to {test_output_file}")
 
         return 1.0 if run_result.returncode == 0 else 0.0
 

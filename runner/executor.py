@@ -57,8 +57,15 @@ class BenchmarkExecutor:
         if stderr:
             (session_dir / "stderr.txt").write_bytes(stderr)
 
+        # Copy work_dir to workspace only if it's outside workspace_dir
         if work_dir is not None and work_dir != workspace_dir:
-            shutil.copytree(work_dir, workspace_dir, dirs_exist_ok=True)
+            # Check if work_dir is already inside workspace_dir
+            try:
+                work_dir.relative_to(workspace_dir)
+                # work_dir is inside workspace_dir, no need to copy
+            except ValueError:
+                # work_dir is outside workspace_dir, need to copy
+                shutil.copytree(work_dir, workspace_dir, dirs_exist_ok=True)
 
         score = benchmark.score(session_dir)
         benchmark.cleanup()
