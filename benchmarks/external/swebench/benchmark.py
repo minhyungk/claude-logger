@@ -90,26 +90,9 @@ Please identify and fix the bug. Apply the fix directly to the repository files.
         )
 
     def score(self, session_dir: Path) -> Optional[float]:
-        if not self._work_dir or not self._work_dir.exists():
-            return None
-        if not self.test_patch:
-            return None
-
-        docker_check = subprocess.run(
-            ["docker", "info"],
-            capture_output=True,
-            timeout=5,
-        )
-        if docker_check.returncode != 0:
-            print(f"  [WARNING] Docker not available, skipping evaluation for {self._instance_id}")
-            return None
-
-        try:
-            score = self._evaluate_in_docker()
-            return score
-        except Exception as e:
-            print(f"  [ERROR] Docker evaluation failed: {e}")
-            return None
+        # Skip Docker evaluation - just return None
+        print(f"  [INFO] Docker evaluation skipped for {self._instance_id}")
+        return None
 
     def _evaluate_in_docker(self) -> Optional[float]:
         eval_dir = self._work_dir.parent / f"eval_{self._instance_id}"

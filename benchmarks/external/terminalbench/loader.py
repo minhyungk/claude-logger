@@ -3,8 +3,8 @@ from typing import Optional
 from ...base import Benchmark
 from .benchmark import TerminalBenchBenchmark
 
-DATASET_NAME = "michaelwang/terminalbench"
-DATASET_SPLIT = "test"
+DATASET_NAME = "alibabagroup/terminal-bench-pro"
+DATASET_SPLIT = "train"
 
 
 def discover_terminalbench_benchmarks(

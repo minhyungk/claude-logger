@@ -15,10 +15,16 @@ claude-logger/
 ├── benchmarks/     # 벤치마크 정의
 │   ├── open/           # 자유 형식 벤치마크 (JSON 기반, 16개)
 │   └── external/
-│       └── swebench/   # SWE-bench Lite 통합 (300개)
+│       ├── swebench/       # SWE-bench Lite 통합 (300개)
+│       ├── terminalbench/  # TerminalBench (200개)
+│       ├── intercode/      # InterCode (bash/python/sql)
+│       └── bigcodebench/   # BigCodeBench
 ├── runner/         # 벤치마크 디스커버리 & 실행기
 │   ├── discovery.py    # 벤치마크 자동 탐색
 │   └── executor.py     # Claude Code 실행 + workspace 관리
+├── analysis/       # 로그 비효율 분석
+│   ├── analyze.py      # 분석 스크립트 (단계별 실행)
+│   └── output/         # 분석 결과물 (gitignored)
 └── viz/            # 대시보드 (세션별 토큰, 비용, 지연시간 차트)
 ```
 
@@ -68,8 +74,12 @@ python3 main.py --bedrock --model sonnet --benchmark chess-engine --swebench-lim
 | `--viz-port` | 대시보드 포트 | 8090 |
 | `--log-dir` | 로그 저장 디렉토리 | `logs/` |
 | `--benchmark` | 이름 필터 (부분 매칭) | 전체 |
+| `--filter-type` | 벤치마크 종류 필터 (`open`, `swebench`, `terminalbench`, `intercode`, `bigcodebench`) | 전체 |
 | `--swebench-limit N` | SWE-bench 인스턴스 수 제한 | 전체(300) |
 | `--swebench-ids` | 콤마 구분 인스턴스 ID 필터 | 없음 |
+| `--terminalbench-limit N` | TerminalBench 태스크 수 제한 | 전체(200) |
+| `--terminalbench-ids` | 콤마 구분 TerminalBench 태스크 ID 필터 | 없음 |
+| `--no-viz` | 벤치마크만 실행 (대시보드 생략) | off |
 | `--viz-only` | 대시보드만 실행 | off |
 
 ## 인증 모드
@@ -181,6 +191,55 @@ python3 main.py --bedrock --model sonnet --benchmark swebench
 - 지연 시간 분포
 - 도구 사용 빈도
 - 개별 호출 상세 조회 (클릭)
+
+## 로그 분석
+
+벤치마크 실행 후 생성된 로그에서 에이전트 비효율 패턴(토큰 낭비, 반복 작업, 자기수정 루프 등)을 추출:
+
+```bash
+# 단계 0: 데이터 검증 (먼저 이것만 실행, 결과 확인 후 다음 단계)
+python3 analysis/analyze.py --stage 0
+
+# 단계 1: events.jsonl 생성 (tool 호출 단위 플랫 데이터)
+python3 analysis/analyze.py --stage 1
+
+# 단계 2: session_metrics.csv 생성 (세션 단위 집계)
+python3 analysis/analyze.py --stage 2
+
+# 단계 3: per_session_analysis.md (비효율 세션 상세 분석)
+python3 analysis/analyze.py --stage 3
+
+# 단계 4: overall_analysis.md (전체 교차 분석)
+python3 analysis/analyze.py --stage 4
+```
+
+### 분석 출력물
+
+| 파일 | 설명 |
+|------|------|
+| `analysis/output/stage0_validation.json` | 벤치별 파싱 검증 리포트 |
+| `analysis/output/events.jsonl` | 모든 tool 호출 (1행 = 1 tool_use). 세션 간 비교, 필터링, 집계에 사용 |
+| `analysis/output/session_metrics.csv` | 세션별 집계 지표 (비용, 에러율, 중복호출, 반복수정, rollback 등) |
+| `analysis/output/per_session_analysis.md` | 비효율 상위 세션의 trace 기반 근거 |
+| `analysis/output/overall_analysis.md` | 벤치별/도구별/명령별 교차 분석 |
+
+### 분석 옵션
+
+```bash
+# 다른 로그 디렉토리 지정
+python3 analysis/analyze.py --stage 1 --logs-dir /path/to/other/logs
+```
+
+### 추출되는 주요 지표
+
+- **redundant_tool_calls**: 동일 입력으로 반복 호출된 도구 수
+- **repeated_file_modifications**: 같은 파일을 여러 번 수정 (자기수정 루프 신호)
+- **rollback_count**: git checkout/reset (완전 원복 = 명확한 헛수고)
+- **error_rate / error_breakdown**: 에러 비율 및 유형별 분류 (Syntax, NotFound, TestFailed, Timeout)
+- **max_consecutive_errors**: 연속 에러 최대 길이
+- **read_but_unused_files**: Read 했으나 수정 대상이 되지 않은 파일 수
+- **occupancy_growth**: 컨텍스트 윈도우 점유율 증가폭
+- **average_cache_hit_ratio**: 캐시 히트율 (비용 효율 지표)
 
 ## 동작 원리
 
