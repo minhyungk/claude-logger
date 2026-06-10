@@ -25,6 +25,7 @@ from typing import Optional
 
 LOGS_DIR = Path(__file__).parent.parent / "logs"
 OUTPUT_DIR = Path(__file__).parent / "output"
+SESSION_FILTER: str | None = None
 
 ZERO_WIDTH_CHARS = {"​", "‌", "‍", "﻿"}
 
@@ -100,12 +101,14 @@ class ToolEvent:
 # Session Discovery
 # ---------------------------------------------------------------------------
 
-def discover_sessions(logs_dir: Path) -> list[dict]:
+def discover_sessions(logs_dir: Path, session_filter: str | None = None) -> list[dict]:
     sessions = []
     if not logs_dir.exists():
         return sessions
     for d in sorted(logs_dir.iterdir()):
         if not d.is_dir() or not d.name.startswith("session_"):
+            continue
+        if session_filter and session_filter not in d.name:
             continue
         name_part = d.name[len("session_"):]
         # Split off trailing _<8-char-hash>
@@ -267,61 +270,121 @@ def parse_cmd_program(command: str) -> str:
     # Handle cd (often in compound commands that we already split)
     return program
 
-
+_PATH_META = set("(){}|<>*?`$!&;")
+ 
+ 
+def _strip_quoted_regions(command: str) -> str:
+    """따옴표로 감싸인 영역(python3 -c "...", sh -c '...' 의 코드/정규식 포함)을
+    공백으로 마스킹한다. 문자 위치(인덱스)는 보존하여, 마스킹된 텍스트에서 찾은
+    리다이렉션 위치로 원본에서 실제 경로를 복원할 수 있게 한다.
+    따옴표 밖의 >, >>, < 만 셸 리다이렉션으로 남는다."""
+    out = []
+    i = 0
+    n = len(command)
+    quote = None
+    while i < n:
+        ch = command[i]
+        if quote:
+            if ch == quote:
+                quote = None
+                out.append(ch)
+            elif ch == "\\" and i + 1 < n:
+                out.append("  ")  # escaped char 두 칸 공백 처리
+                i += 2
+                continue
+            else:
+                out.append(" ")   # 따옴표 내부 내용 마스킹
+        else:
+            out.append(ch)
+            if ch in ("'", '"'):
+                quote = ch
+        i += 1
+    return "".join(out)
+ 
+ 
+def _looks_like_path(p: str) -> bool:
+    """추출된 문자열이 실제 파일 경로로 보이는지 검증.
+    정규식 잔재/셸 메타문자/비경로 쓰레기값(None, (html, {result:4} 등)을 거부."""
+    if not p:
+        return False
+    if p in ("None", "none", "NULL"):
+        return False
+    if p.startswith("/dev/") or p.isdigit():
+        return False
+    if any(c in _PATH_META for c in p):
+        return False
+    # 경로 조건: 슬래시 포함, 또는 점 있는 파일명(foo.py, README.md)
+    if "/" in p:
+        return True
+    base = p.rsplit("/", 1)[-1]
+    if "." in base:
+        ext = base.rsplit(".", 1)[-1]
+        if ext.isalnum() and len(ext) <= 8:
+            return True
+    return False
+ 
+ 
+# ---------------------------------------------------------------------------
+# [교체] 기존 extract_bash_target_path() 전체를 아래로 교체하세요
+# ---------------------------------------------------------------------------
+ 
 def extract_bash_target_path(command: str) -> tuple[str, bool]:
-    """Extract target file path from Bash file-write commands.
-    Returns (target_path, is_file_write).
-    """
+    """Bash 파일쓰기 명령에서 대상 경로를 추출. (target_path, is_file_write) 반환.
+ 
+    핵심 수정: 따옴표/인라인 코드(python3 -c "...") 내부의 >, < 를 마스킹하여
+    정규식·코드 텍스트를 파일 리다이렉션으로 오인하지 않는다. 추출된 경로는
+    _looks_like_path()로 검증하여 쓰레기값을 거부한다."""
     if not command:
         return "", False
-
-    # patch / git apply → file write but unknown target
+ 
+    # patch / git apply → 파일쓰기지만 대상은 명령에 없음(의도된 동작): target 비움, is_file_write=1
     if PATCH_PATTERN.search(command):
         return "", True
-
-    # sed -i
-    sed_match = re.search(r"sed\s+.*-i\b", command)
-    if sed_match:
-        # Extract last non-option argument as file path
-        # Simplified: look for file path after the sed expression
-        parts = command.split()
-        # Find file args (skip flags and expressions)
+ 
+    # 따옴표/인라인 코드 영역 마스킹 (위치 보존)
+    masked = _strip_quoted_regions(command)
+ 
+    # sed -i  (마스킹된 텍스트로 파싱 → 따옴표 안 표현식 무시)
+    if re.search(r"sed\s+.*-i\b", masked):
+        parts = masked.split()
         candidates = []
         skip_next = False
-        for i, p in enumerate(parts):
+        for p in parts:
             if skip_next:
                 skip_next = False
                 continue
             if p == "sed" or p.startswith("-"):
-                if p in ("-e", "-f") or (p.startswith("-") and "i" not in p):
+                if p in ("-e", "-f"):
                     skip_next = True
                 continue
-            # Skip quoted sed expressions
-            if p.startswith(("'", '"', "s/", "s|")):
+            if not p.strip():
                 continue
             candidates.append(p)
         if candidates:
             path = candidates[-1].strip("'\"")
-            return path, True
+            if _looks_like_path(path):
+                return path, True
         return "", True
-
+ 
     # tee
-    tee_match = TEE_PATTERN.search(command)
+    tee_match = TEE_PATTERN.search(masked)
     if tee_match:
-        return tee_match.group(1).strip("'\""), True
-
-    # Redirect: > or >> (but NOT 2> or 1> or &>)
-    # Find redirects that are actual file writes
-    redirect_match = re.search(r'(?<!\d)(?<!&)>>?\s*(?:["\'`]?)([^\s"\'`|;&><\)]+)', command)
+        path = tee_match.group(1).strip("'\"`")
+        if _looks_like_path(path):
+            return path, True
+        return "", False
+ 
+    # 리다이렉션 > 또는 >> (단 2> / 1> / &> 제외). 마스킹된 텍스트에서 위치를 찾고
+    # 원본 command의 같은 인덱스에서 실제 경로를 복원한다.
+    redirect_match = re.search(r'(?<!\d)(?<!&)>>?\s*([^\s"\'`|;&><()]+)', masked)
     if redirect_match:
-        path = redirect_match.group(1).strip("'\"`")
-        # Filter out /dev/null and fd targets
-        if path.startswith("/dev/") or path.isdigit():
-            return "", False
-        return path, True
-
+        start, end = redirect_match.start(1), redirect_match.end(1)
+        path = command[start:end].strip("'\"`")
+        if _looks_like_path(path):
+            return path, True
+        return "", False
+ 
     return "", False
-
 
 def classify_action(tool_name: str, tool_input: dict, cmd_program: str, is_file_write: bool) -> str:
     """Classify a tool call into an action category."""
@@ -535,7 +598,7 @@ def parse_session_events(session_info: dict) -> list[ToolEvent]:
 
 def run_stage_0(logs_dir: Path):
     """Per-benchmark single-session validation."""
-    sessions = discover_sessions(logs_dir)
+    sessions = discover_sessions(logs_dir, SESSION_FILTER)
     if not sessions:
         print("No sessions found.")
         return
@@ -663,7 +726,7 @@ def run_stage_0(logs_dir: Path):
 
 def run_stage_1(logs_dir: Path):
     """Generate events.jsonl with one row per tool_use."""
-    sessions = discover_sessions(logs_dir)
+    sessions = discover_sessions(logs_dir, SESSION_FILTER)
     if not sessions:
         print("No sessions found.")
         return
@@ -855,7 +918,7 @@ def run_stage_2(logs_dir: Path):
             event = ToolEvent(**event_dict)
             events_by_session[event.session_id].append(event)
 
-    sessions = discover_sessions(logs_dir)
+    sessions = discover_sessions(logs_dir, SESSION_FILTER)
     session_map = {s["session_id"]: s for s in sessions}
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -1182,10 +1245,12 @@ def run_stage_4(logs_dir: Path):
 
 def main():
     parser = argparse.ArgumentParser(description="Benchmark Log Inefficiency Analysis")
-    parser.add_argument("--stage", type=int, required=True, choices=[0, 1, 2, 3, 4],
-                        help="Stage to run (0-4)")
+    parser.add_argument("--stage", type=int, required=True, choices=[0, 1, 2, 3, 4, 99],
+                        help="Stage to run (0-4), or 99 to run all stages sequentially")
     parser.add_argument("--logs-dir", type=str, default=None,
                         help="Path to logs directory (default: ../logs)")
+    parser.add_argument("--session", type=str, default=None,
+                        help="Filter to a specific session (substring match on folder name)")
     args = parser.parse_args()
 
     logs_dir = Path(args.logs_dir) if args.logs_dir else LOGS_DIR
@@ -1194,7 +1259,17 @@ def main():
         print(f"Error: logs directory not found: {logs_dir}")
         sys.exit(1)
 
-    if args.stage == 0:
+    # Store session filter globally for all stages
+    global SESSION_FILTER
+    SESSION_FILTER = args.session
+
+    if args.stage == 99:
+        for stage_num in range(5):
+            print(f"\n{'#'*70}")
+            print(f"# STAGE {stage_num}")
+            print(f"{'#'*70}\n")
+            [run_stage_0, run_stage_1, run_stage_2, run_stage_3, run_stage_4][stage_num](logs_dir)
+    elif args.stage == 0:
         run_stage_0(logs_dir)
     elif args.stage == 1:
         run_stage_1(logs_dir)

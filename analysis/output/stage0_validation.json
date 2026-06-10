@@ -1,0 +1,73 @@
+{
+  "open": {
+    "session_id": "file-encryption-tool_73df856b",
+    "num_calls": 43,
+    "num_events": 16,
+    "tool_distribution": {
+      "Bash": 16
+    },
+    "action_distribution": {
+      "file_modify": 8,
+      "other": 5,
+      "exec_test": 1,
+      "search": 1,
+      "read": 1
+    },
+    "error_types": {},
+    "file_mod_methods": {
+      "Bash": 8
+    },
+    "bash_count": 16
+  },
+  "swebench": {
+    "session_id": "swebench-django__django-12184_fee4a485",
+    "num_calls": 243,
+    "num_events": 244,
+    "tool_distribution": {
+      "Bash": 215,
+      "Read": 27,
+      "Edit": 2
+    },
+    "action_distribution": {
+      "vcs": 19,
+      "search": 63,
+      "read": 35,
+      "other": 104,
+      "exec_test": 19,
+      "file_modify": 4
+    },
+    "error_types": {
+      "NotFound": 5,
+      "Other": 2,
+      "TestFailed": 1
+    },
+    "file_mod_methods": {
+      "Bash": 2,
+      "Edit": 2
+    },
+    "bash_count": 215
+  },
+  "terminalbench": {
+    "session_id": "terminalbench-advanced-poker-hand-classifier_b6c087b2",
+    "num_calls": 57,
+    "num_events": 55,
+    "tool_distribution": {
+      "Bash": 53,
+      "Read": 2
+    },
+    "action_distribution": {
+      "search": 6,
+      "other": 8,
+      "file_modify": 23,
+      "exec_test": 13,
+      "read": 5
+    },
+    "error_types": {
+      "Other": 2
+    },
+    "file_mod_methods": {
+      "Bash": 23
+    },
+    "bash_count": 53
+  }
+}
