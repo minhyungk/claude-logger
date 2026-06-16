@@ -154,9 +154,13 @@ python3 main.py --bedrock --model sonnet --benchmark regex --swebench-limit 0
 python3 main.py --bedrock --model sonnet --swebench-limit 0
 ```
 
-### SWE-bench Lite (300개)
+### 외부 벤치마크
 
-[SWE-bench Lite](https://huggingface.co/datasets/SWE-bench/SWE-bench_Lite) — 실제 GitHub 이슈를 해결하는 능력 측정. 레포 clone → base_commit checkout → Claude에게 문제 전달 → test patch로 pass/fail 판정:
+#### SWE-bench Lite (300개)
+
+**데이터셋**: [`SWE-bench/SWE-bench_Lite`](https://huggingface.co/datasets/SWE-bench/SWE-bench_Lite) (split: `test`)
+
+실제 GitHub 이슈를 해결하는 능력 측정. 레포 clone → base_commit checkout → Claude에게 문제 전달 → test patch로 pass/fail 판정:
 
 ```bash
 # 특정 인스턴스
@@ -167,6 +171,61 @@ python3 main.py --bedrock --model sonnet --swebench-limit 5
 
 # swebench만 필터
 python3 main.py --bedrock --model sonnet --benchmark swebench
+```
+
+#### TerminalBench Pro (200개)
+
+**데이터셋**: [`alibabagroup/terminal-bench-pro`](https://huggingface.co/datasets/alibabagroup/terminal-bench-pro) (split: `train`)
+
+TerminalBench의 업그레이드 버전. 복잡한 bash 스크립팅, 시스템 관리, 데이터 처리 작업을 terminal 환경에서 수행:
+
+```bash
+# 특정 task
+python3 main.py --bedrock --model sonnet --terminalbench-ids "benchmark-gcc-opt-levels,boot-debian-qemu-with-ssh-check"
+
+# 상위 20개만
+python3 main.py --bedrock --model sonnet --terminalbench-limit 20
+
+# terminalbench만 필터
+python3 main.py --bedrock --model sonnet --filter-type terminalbench
+```
+
+#### BigCodeBench (1,140개)
+
+**데이터셋**: [`bigcode/bigcodebench`](https://huggingface.co/datasets/bigcode/bigcodebench) (split: `v0.1.4`)  
+**모드**: Instruct (자연어 지시사항만 제공, `instruct_prompt` 사용)
+
+실제 라이브러리 사용이 필요한 복잡한 코딩 작업 평가:
+
+```bash
+# tmp 파일 활용 (긴 task ID 리스트)
+python3 << 'EOF'
+task_ids = [f'BigCodeBench/{i}' for i in range(20)]
+with open('/tmp/bigcodebench_ids.txt', 'w') as f:
+    f.write(','.join(task_ids))
+EOF
+
+python3 main.py --filter-type bigcodebench --bigcodebench-ids "$(cat /tmp/bigcodebench_ids.txt)" --bedrock --no-viz
+```
+
+**참고**: BigCodeBench는 Complete 모드(함수 signature + docstring 제공)와 Instruct 모드(자연어 설명만) 두 가지가 있으며, 현재는 더 어려운 **Instruct 모드**를 사용합니다.
+
+#### InterCode (bash/python/sql)
+
+**데이터셋**: [`intercode/intercode`](https://huggingface.co/datasets/intercode/intercode) (split: `test`)  
+**서브셋**: `bash`, `python`, `sql`
+
+대화형 프로그래밍 환경에서 단계적으로 문제 해결:
+
+```bash
+# bash 태스크 (기본값)
+python3 main.py --bedrock --model sonnet --filter-type intercode --intercode-limit 10
+
+# python 태스크
+python3 main.py --bedrock --model sonnet --filter-type intercode --intercode-task-type python --intercode-limit 10
+
+# sql 태스크
+python3 main.py --bedrock --model sonnet --filter-type intercode --intercode-task-type sql --intercode-limit 10
 ```
 
 ### 커스텀 벤치마크 추가

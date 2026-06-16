@@ -53,6 +53,26 @@
   - ./django/db/migrations/autodetector.py: 11 times
 
 
+## terminalbench-build-qemu-arm-user-emulator_118acfad
+
+- Benchmark: terminalbench
+- Total calls: 103, Tool uses: 105
+- Cost: $1.80884, Latency: 409.24s
+- Errors: 11 (rate: 0.1048)
+  - Syntax: 0, NotFound: 5, TestFailed: 0, Timeout: 0
+- Redundant calls: 4
+- Repeated file modifications: 5
+- Rollbacks: 1, Stashes: 0
+- Max consecutive errors: 1
+- Cache hit ratio: 0.9994
+- Occupancy: max=40.93%, growth=39.67%
+- Read but unused files: 1
+
+### Repeated file modifications
+  - /Users/michaelkwon/Desktop/AegisData/claude-logger/logs/session_terminalbench-build-qemu-arm-user-emulator_118acfad/workspace/terminalbench_workspaces/build-qemu-arm-user-emulator/qemu/common-user/host/aarch64/safe-syscall.inc.S: 5 times
+  - /Users/michaelkwon/Desktop/AegisData/claude-logger/logs/session_terminalbench-build-qemu-arm-user-emulator_118acfad/workspace/terminalbench_workspaces/build-qemu-arm-user-emulator/qemu/linux-user/gen-vdso.c: 2 times
+
+
 ## swebench-django__django-12113_daa27f7b
 
 - Benchmark: swebench
@@ -70,6 +90,58 @@
 
 ### Repeated file modifications
   - /Users/michaelkwon/Desktop/AegisData/claude-logger/logs/session_swebench-django__django-12113_daa27f7b/workspace/swebench_workspaces/django__django-12113/django/db/backends/sqlite3/creation.py: 5 times
+
+
+## terminalbench-build-coq-from-source_0ea08248
+
+- Benchmark: terminalbench
+- Total calls: 66, Tool uses: 75
+- Cost: $1.149454, Latency: 334.83s
+- Errors: 9 (rate: 0.12)
+  - Syntax: 0, NotFound: 3, TestFailed: 0, Timeout: 0
+- Redundant calls: 1
+- Repeated file modifications: 4
+- Rollbacks: 0, Stashes: 0
+- Max consecutive errors: 3
+- Cache hit ratio: 0.9839
+- Occupancy: max=23.9%, growth=22.66%
+- Read but unused files: 0
+
+### Error sequences (2 sequences of 2+ consecutive errors)
+
+  Sequence 1 (turns 0-1):
+    - [Bash] ls → NotFound
+    - [Bash] ls → NotFound
+
+  Sequence 2 (turns 63-65):
+    - [Bash] sudo → Other
+    - [Bash] cat → Other
+    - [Bash] cat → Other
+
+### Repeated file modifications
+  - /tmp/comprehensive_test.v: 3 times
+  - /tmp/test_proofs/test_arith.v: 2 times
+  - /tmp/test_proofs/test_lists.v: 2 times
+
+
+## terminalbench-automate-blind-graph-mapping_e2218c4b
+
+- Benchmark: terminalbench
+- Total calls: 46, Tool uses: 45
+- Cost: $2.548794, Latency: 775.82s
+- Errors: 6 (rate: 0.1333)
+  - Syntax: 0, NotFound: 2, TestFailed: 0, Timeout: 0
+- Redundant calls: 0
+- Repeated file modifications: 6
+- Rollbacks: 0, Stashes: 0
+- Max consecutive errors: 1
+- Cache hit ratio: 0.7826
+- Occupancy: max=30.8%, growth=29.3%
+- Read but unused files: 1
+
+### Repeated file modifications
+  - ./auto_explore.py: 6 times
+  - ./graph_game.sh: 2 times
 
 
 ## swebench-django__django-11564_6a1d3bf4
@@ -138,6 +210,35 @@
   - poker_classifier.py: 8 times
 
 
+## terminalbench-apache-log-security-analyzer_0ca75e7a
+
+- Benchmark: terminalbench
+- Total calls: 29, Tool uses: 28
+- Cost: $1.725839, Latency: 382.54s
+- Errors: 6 (rate: 0.2143)
+  - Syntax: 0, NotFound: 2, TestFailed: 1, Timeout: 0
+- Redundant calls: 1
+- Repeated file modifications: 4
+- Rollbacks: 0, Stashes: 0
+- Max consecutive errors: 2
+- Cache hit ratio: 0.7931
+- Occupancy: max=30.76%, growth=29.57%
+- Read but unused files: 0
+
+### Error sequences (2 sequences of 2+ consecutive errors)
+
+  Sequence 1 (turns 10-11):
+    - [Bash] cd → TestFailed
+    - [Edit] /Users/michaelkwon/Desktop/AegisData/cla → Other
+
+  Sequence 2 (turns 17-18):
+    - [Bash] cd → NotFound
+    - [Bash] python-c → Other
+
+### Repeated file modifications
+  - /Users/michaelkwon/Desktop/AegisData/claude-logger/logs/session_terminalbench-apache-log-security-analyzer_0ca75e7a/workspace/terminalbench_workspaces/apache-log-security-analyzer/app/log_analyzer.py: 5 times
+
+
 ## swebench-astropy__astropy-12907_3caee9e6
 
 - Benchmark: swebench
@@ -165,6 +266,60 @@
 
 ### Repeated file modifications
   - /Users/michaelkwon/Desktop/AegisData/claude-logger/logs/session_swebench-astropy__astropy-12907_3caee9e6/workspace/swebench_workspaces/astropy__astropy-12907/astropy/modeling/separable.py: 4 times
+
+
+## terminalbench-boot-debian-qemu-with-ssh-check_8965f8d8
+
+- Benchmark: terminalbench
+- Total calls: 47, Tool uses: 67
+- Cost: $0.627954, Latency: 283.64s
+- Errors: 8 (rate: 0.1194)
+  - Syntax: 0, NotFound: 5, TestFailed: 1, Timeout: 0
+- Redundant calls: 1
+- Repeated file modifications: 2
+- Rollbacks: 0, Stashes: 0
+- Max consecutive errors: 2
+- Cache hit ratio: 0.9782
+- Occupancy: max=16.32%, growth=14.96%
+- Read but unused files: 0
+
+### Error sequences (1 sequences of 2+ consecutive errors)
+
+  Sequence 1 (turns 30-31):
+    - [Bash] boot_debian_qemu_final.sh → TestFailed
+    - [Edit] boot_debian_qemu_final.sh → Other
+
+### Repeated file modifications
+  - boot_debian_qemu_final.sh: 3 times
+
+
+## terminalbench-build-grpc-user-profile-service_6069dd38
+
+- Benchmark: terminalbench
+- Total calls: 46, Tool uses: 44
+- Cost: $1.159647, Latency: 370.43s
+- Errors: 8 (rate: 0.1818)
+  - Syntax: 0, NotFound: 7, TestFailed: 0, Timeout: 0
+- Redundant calls: 3
+- Repeated file modifications: 1
+- Rollbacks: 0, Stashes: 0
+- Max consecutive errors: 2
+- Cache hit ratio: 0.9769
+- Occupancy: max=24.98%, growth=22.84%
+- Read but unused files: 0
+
+### Error sequences (2 sequences of 2+ consecutive errors)
+
+  Sequence 1 (turns 4-5):
+    - [Bash] cd → NotFound
+    - [Bash] pip → NotFound
+
+  Sequence 2 (turns 36-37):
+    - [Bash] cat → NotFound
+    - [Bash] cd → NotFound
+
+### Repeated file modifications
+  - /tmp/grpc_server.log: 2 times
 
 
 ## swebench-django__django-11001_f35dcabd
@@ -210,151 +365,3 @@
 
 ### Repeated file modifications
   - /Users/michaelkwon/Desktop/AegisData/claude-logger/logs/session_swebench-django__django-11179_08596755/workspace/swebench_workspaces/django__django-11179/django/db/models/deletion.py: 4 times
-
-
-## rsa-encryption_1711795e
-
-- Benchmark: open
-- Total calls: 29, Tool uses: 31
-- Cost: $1.075775, Latency: 586.38s
-- Errors: 4 (rate: 0.129)
-  - Syntax: 0, NotFound: 1, TestFailed: 0, Timeout: 0
-- Redundant calls: 1
-- Repeated file modifications: 3
-- Rollbacks: 0, Stashes: 0
-- Max consecutive errors: 3
-- Cache hit ratio: 0.9994
-- Occupancy: max=29.45%, growth=14.14%
-- Read but unused files: 0
-
-### Error sequences (1 sequences of 2+ consecutive errors)
-
-  Sequence 1 (turns 1-3):
-    - [Bash] python → NotFound
-    - [Bash] python3 → Other
-    - [Edit] /Users/michaelkwon/Desktop/AegisData/cla → Other
-
-### Repeated file modifications
-  - /Users/michaelkwon/Desktop/AegisData/claude-logger/logs/session_regex-engine_86265389/workspace/regex_engine.py: 3 times
-  - test_regex_engine.py: 2 times
-
-
-## swebench-django__django-11099_b2a72280
-
-- Benchmark: swebench
-- Total calls: 35, Tool uses: 34
-- Cost: $0.431179, Latency: 208.91s
-- Errors: 6 (rate: 0.1765)
-  - Syntax: 2, NotFound: 2, TestFailed: 0, Timeout: 0
-- Redundant calls: 3
-- Repeated file modifications: 1
-- Rollbacks: 0, Stashes: 0
-- Max consecutive errors: 3
-- Cache hit ratio: 0.9709
-- Occupancy: max=14.24%, growth=13.17%
-- Read but unused files: 1
-
-### Error sequences (2 sequences of 2+ consecutive errors)
-
-  Sequence 1 (turns 12-14):
-    - [Bash] pytest → NotFound
-    - [Bash] pytest → Other
-    - [Bash] django → NotFound
-
-  Sequence 2 (turns 16-17):
-    - [Bash] cd → Syntax
-    - [Bash] cd → Syntax
-
-### Repeated file modifications
-  - ./django/contrib/auth/validators.py: 2 times
-
-
-## swebench-astropy__astropy-6938_3c830c98
-
-- Benchmark: swebench
-- Total calls: 83, Tool uses: 82
-- Cost: $2.035948, Latency: 512.39s
-- Errors: 7 (rate: 0.0854)
-  - Syntax: 0, NotFound: 3, TestFailed: 0, Timeout: 0
-- Redundant calls: 3
-- Repeated file modifications: 0
-- Rollbacks: 0, Stashes: 0
-- Max consecutive errors: 2
-- Cache hit ratio: 0.9877
-- Occupancy: max=39.39%, growth=38.25%
-- Read but unused files: 2
-
-### Error sequences (2 sequences of 2+ consecutive errors)
-
-  Sequence 1 (turns 5-6):
-    - [Bash] pytest → NotFound
-    - [Bash] pytest → NotFound
-
-  Sequence 2 (turns 10-11):
-    - [Bash] pytest → Other
-    - [Bash] pytest → Other
-
-
-## swebench-django__django-12184_fee4a485
-
-- Benchmark: swebench
-- Total calls: 242, Tool uses: 244
-- Cost: $11.935538, Latency: 2209.47s
-- Errors: 8 (rate: 0.0328)
-  - Syntax: 0, NotFound: 5, TestFailed: 1, Timeout: 0
-- Redundant calls: 1
-- Repeated file modifications: 0
-- Rollbacks: 0, Stashes: 0
-- Max consecutive errors: 1
-- Cache hit ratio: 0.971
-- Occupancy: max=66.98%, growth=65.51%
-- Read but unused files: 6
-
-
-## swebench-django__django-10924_f9b88d8b
-
-- Benchmark: swebench
-- Total calls: 54, Tool uses: 53
-- Cost: $0.800302, Latency: 306.95s
-- Errors: 6 (rate: 0.1132)
-  - Syntax: 0, NotFound: 1, TestFailed: 0, Timeout: 0
-- Redundant calls: 1
-- Repeated file modifications: 1
-- Rollbacks: 0, Stashes: 0
-- Max consecutive errors: 2
-- Cache hit ratio: 0.981
-- Occupancy: max=20.13%, growth=17.56%
-- Read but unused files: 2
-
-### Error sequences (2 sequences of 2+ consecutive errors)
-
-  Sequence 1 (turns 9-10):
-    - [Bash] pytest → NotFound
-    - [Bash] pytest → Other
-
-  Sequence 2 (turns 13-14):
-    - [Bash] python-c → Other
-    - [Bash] python-c → Other
-
-### Repeated file modifications
-  - /tmp/test_final_verification.py: 2 times
-
-
-## terminalbench-advanced-json-to-rfc4180-csv-converter_dbd598c8
-
-- Benchmark: terminalbench
-- Total calls: 39, Tool uses: 43
-- Cost: $0.873422, Latency: 395.8s
-- Errors: 3 (rate: 0.0698)
-  - Syntax: 0, NotFound: 0, TestFailed: 0, Timeout: 0
-- Redundant calls: 1
-- Repeated file modifications: 3
-- Rollbacks: 0, Stashes: 0
-- Max consecutive errors: 1
-- Cache hit ratio: 0.9995
-- Occupancy: max=24.31%, growth=22.22%
-- Read but unused files: 0
-
-### Repeated file modifications
-  - demo_exact_paths.py: 3 times
-  - converter.py: 2 times

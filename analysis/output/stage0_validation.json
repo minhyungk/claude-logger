@@ -1,4 +1,28 @@
 {
+  "bigcodebench": {
+    "session_id": "bigcodebench-BigCodeBench-10_cdc95cb6",
+    "num_calls": 12,
+    "num_events": 10,
+    "tool_distribution": {
+      "Edit": 3,
+      "Bash": 5,
+      "Read": 2
+    },
+    "action_distribution": {
+      "file_modify": 4,
+      "search": 1,
+      "exec_test": 3,
+      "read": 2
+    },
+    "error_types": {
+      "Other": 2
+    },
+    "file_mod_methods": {
+      "Edit": 3,
+      "Bash": 1
+    },
+    "bash_count": 5
+  },
   "open": {
     "session_id": "file-encryption-tool_73df856b",
     "num_calls": 43,
@@ -48,26 +72,30 @@
     "bash_count": 215
   },
   "terminalbench": {
-    "session_id": "terminalbench-advanced-poker-hand-classifier_b6c087b2",
-    "num_calls": 57,
-    "num_events": 55,
+    "session_id": "terminalbench-build-qemu-arm-user-emulator_118acfad",
+    "num_calls": 104,
+    "num_events": 105,
     "tool_distribution": {
-      "Bash": 53,
-      "Read": 2
+      "Bash": 83,
+      "Read": 9,
+      "Edit": 13
     },
     "action_distribution": {
-      "search": 6,
-      "other": 8,
-      "file_modify": 23,
-      "exec_test": 13,
-      "read": 5
+      "other": 46,
+      "read": 18,
+      "search": 22,
+      "vcs": 2,
+      "rollback": 1,
+      "file_modify": 16
     },
     "error_types": {
-      "Other": 2
+      "NotFound": 5,
+      "Other": 6
     },
     "file_mod_methods": {
-      "Bash": 23
+      "Bash": 3,
+      "Edit": 13
     },
-    "bash_count": 53
+    "bash_count": 83
   }
 }

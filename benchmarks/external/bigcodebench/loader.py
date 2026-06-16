@@ -4,7 +4,7 @@ from ...base import Benchmark
 from .benchmark import BigCodeBenchBenchmark
 
 DATASET_NAME = "bigcode/bigcodebench"
-DATASET_SPLIT = "test"
+DATASET_SPLIT = "v0.1.4"
 
 
 def discover_bigcodebench_benchmarks(

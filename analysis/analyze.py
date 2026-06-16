@@ -122,6 +122,10 @@ def discover_sessions(logs_dir: Path, session_filter: str | None = None) -> list
             bench_type = "swebench"
         elif bench_name.startswith("terminalbench-"):
             bench_type = "terminalbench"
+        elif bench_name.startswith("bigcodebench-"):
+            bench_type = "bigcodebench"
+        elif bench_name.startswith("intercode-"):
+            bench_type = "intercode"
         else:
             bench_type = "open"
 
