@@ -1,0 +1,21 @@
+The fix is clean and correct. Let me provide a summary of the changes made:
+
+## Summary of Changes
+
+### Problem
+`JSONField` values were not properly displayed in the Django admin when the field is readonly. Two bugs existed in `django/contrib/admin/utils.py`:
+
+1. **`and value` condition bug**: The check `elif isinstance(field, models.JSONField) and value:` would fail for falsy-but-valid JSON values like `False` (JSON: `false`) and `0`. These would fall through to `display_for_value()`, which would display `'False'` (Python) instead of `'false'` (JSON).
+
+2. **No `InvalidJSONInput` handling**: Calling `json.dumps()` directly on an `InvalidJSONInput` value (a `str` subclass used by the form field to flag invalid JSON) would incorrectly wrap it in quotes, turning `'invalid json text'` into `'"invalid json text"'`.
+
+### Fix
+
+**`django/contrib/admin/utils.py`**:
+- Removed `and value` from the condition (empty values are already handled by the `value in field.empty_values` check earlier in the function)
+- Replaced direct `json.dumps(value, ..., cls=field.encoder)` with `field.formfield().prepare_value(value)`, which correctly handles `InvalidJSONInput` by returning it as-is (unchanged), while using the same `json.dumps` logic with the field's encoder for normal values
+
+**`tests/admin_utils/tests.py`**:
+- Added `InvalidJSONInput` import from `django.forms.fields`
+- Added test cases for falsy JSON values (`False` → `'false'`, `True` → `'true'`, `0` → `'0'`)
+- Added a dedicated test `test_json_display_for_field_invalid_json_input` for the `InvalidJSONInput` case

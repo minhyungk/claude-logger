@@ -1,0 +1,39 @@
+All tests pass. The fix is already properly applied in the repository. Let me provide a clear summary of what the fix is and how it works:
+
+## Summary
+
+The bug was in `django/db/models/sql/compiler.py` in the `find_ordering_name()` method of `SQLCompiler`.
+
+### The Problem
+
+When ordering by a self-referential foreign key's `_id` attribute (e.g., `order_by("record__root_id")`), Django incorrectly applied the default ordering of the related model, resulting in:
+1. An unnecessary extra JOIN to the same table
+2. Wrong sort direction (inverted from what was specified)
+
+### Root Cause
+
+In `find_ordering_name()`, the code decides whether to apply the related model's default ordering by checking if the field's `attname` matches the ordering name. The bug was comparing against `name` (the full lookup path like `"record__root_id"`) instead of `pieces[-1]` (just the last component `"root_id"`).
+
+**Buggy code:**
+```python
+if field.is_relation and opts.ordering and getattr(field, 'attname', None) != name and name != 'pk':
+```
+
+For `order_by("record__root_id")`:
+- `name = "record__root_id"` 
+- `field.attname = "root_id"`
+- `"root_id" != "record__root_id"` → `True` → wrongly applied default ordering
+
+### The Fix
+
+```python
+# django/db/models/sql/compiler.py, line 1089
+and getattr(field, "attname", None) != pieces[-1]
+```
+
+For `order_by("record__root_id")`:
+- `pieces[-1] = "root_id"`
+- `field.attname = "root_id"`
+- `"root_id" != "root_id"` → `False` → correctly skips default ordering and orders by `root_id` directly
+
+This ensures that when ordering by a FK's `_id` attname (like `root_id`), Django uses the column directly without applying the related model's default ordering or creating an unnecessary extra JOIN.

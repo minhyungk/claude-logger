@@ -1,0 +1,24 @@
+The fix for issue #12497 is already correctly applied in this repository. Here's a summary of what was done (and is confirmed correct):
+
+## Summary
+
+**Issue:** The error hints for `fields.E334` and `fields.E335` in `django/db/models/fields/related.py` incorrectly referred to `ForeignKey` with `symmetrical=False` and `through` arguments — but those are `ManyToManyField` arguments, not `ForeignKey`.
+
+**Fix applied in `django/db/models/fields/related.py`:**
+
+The hints for both error codes (`fields.E334` and `fields.E335`) now correctly read:
+```python
+hint=(
+    "If you want to create a recursive relationship, "
+    'use ManyToManyField("%s", through="%s").'
+)
+% (RECURSIVE_RELATIONSHIP_CONSTANT, relationship_model_name)
+```
+
+This produces: `'use ManyToManyField("self", through="<ModelName")'`
+
+**Two key corrections made:**
+1. **`ForeignKey` → `ManyToManyField`** — `symmetrical` and `through` are `ManyToManyField` keyword arguments.
+2. **Removed `symmetrical=False`** — This is no longer required for recursive M2M relationships with intermediary models since Django 3.0.
+
+Both `test_ambiguous_relationship_model_from` (E334) and `test_ambiguous_relationship_model_to` (E335) tests pass, confirming the fix is correct.

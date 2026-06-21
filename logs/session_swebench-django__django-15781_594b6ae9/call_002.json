@@ -1,0 +1,60 @@
+{
+  "meta": {
+    "timestamp": "2026-06-21T07:58:36.000Z",
+    "model": "claude-sonnet-4-6",
+    "session_id": "swebench-django__django-15781_594b6ae9",
+    "call_index": 2,
+    "max_tokens": 32000,
+    "temperature": null,
+    "system_prompt": "x-anthropic-billing-header: cc_version=2.1.179.934; cc_entrypoint=sdk-cli; cch=88598; You are a Claude agent, built on Anthropic's Claude Agent SDK. CWD: /Users/chanikpark/Aegis-ATV/bench_log/logs/session_swebench-django__django-15781_594b6ae9/workspace/swebench_workspaces/django__django-15781\nDate: 2026-06-21\n\ngitStatus: This is the git status at the start of the conversation. Note that this status is a snapshot in time, and will not update during the conversation.\n\nCurrent branch: main\n\nMain branch (you will usually use this for PRs): main\n\nGit user: Chan Ik Park\n\nStatus:\n(clean)\n\nRecent commits:\nb461519 Refs #36560, CVE-2026-35193 -- Recognized qualified cache-control directives.\n2c5e4af Fixed #37165 -- Updated Async Support topics doc.\nf2f5228 Added CI workflow to expand geospatial library version coverage.\ne877e21 Refs #373 -- Updated FAQ page with partial composite primary key support.\n189c2d2 Fixed #37164 -- Supported subclasses\u2019 _get_lines() in jsonl Deserializer."
+  },
+  "tokens": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "cost": {
+    "input_cost": 0.0,
+    "output_cost": 0.0,
+    "cache_write_cost": 0.0,
+    "cache_read_cost": 0.0,
+    "total_cost": 0.0
+  },
+  "context": {
+    "occupancy_pct": 0.0,
+    "num_turns": 1,
+    "per_message_lengths": [
+      {
+        "role": "user",
+        "length": 5160
+      }
+    ]
+  },
+  "tools": [],
+  "performance": {
+    "latency_ms": 378.1,
+    "stop_reason": ""
+  },
+  "conversation": {
+    "messages": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "text",
+            "text": "<system-reminder>\nAs you answer the user's questions, you can use the following context:\n# currentDate\nToday's date is 2026-06-21.\n\n      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.\n</system-reminder>\n\n"
+          },
+          {
+            "type": "text",
+            "text": "Fix the following issue in the django/django repository.\n\n## Issue\nCustomizable management command formatters.\nDescription\n\t\nWith code like:\nclass Command(BaseCommand):\n\thelp = '''\n\tImport a contract from tzkt.\n\tExample usage:\n\t\t./manage.py tzkt_import 'Tezos Mainnet' KT1HTDtMBRCKoNHjfWEEvXneGQpCfPAt6BRe\n\t'''\nHelp output is:\n$ ./manage.py help tzkt_import\nusage: manage.py tzkt_import [-h] [--api API] [--version] [-v {0,1,2,3}] [--settings SETTINGS]\n\t\t\t\t\t\t\t [--pythonpath PYTHONPATH] [--traceback] [--no-color] [--force-color]\n\t\t\t\t\t\t\t [--skip-checks]\n\t\t\t\t\t\t\t blockchain target\nImport a contract from tzkt Example usage: ./manage.py tzkt_import 'Tezos Mainnet'\nKT1HTDtMBRCKoNHjfWEEvXneGQpCfPAt6BRe\npositional arguments:\n blockchain\t\t\tName of the blockchain to import into\n target\t\t\t\tId of the contract to import\nWhen that was expected:\n$ ./manage.py help tzkt_import\nusage: manage.py tzkt_import [-h] [--api API] [--version] [-v {0,1,2,3}] [--settings SETTINGS]\n\t\t\t\t\t\t\t [--pythonpath PYTHONPATH] [--traceback] [--no-color] [--force-color]\n\t\t\t\t\t\t\t [--skip-checks]\n\t\t\t\t\t\t\t blockchain target\nImport a contract from tzkt \nExample usage: \n\t./manage.py tzkt_import 'Tezos Mainnet' KT1HTDtMBRCKoNHjfWEEvXneGQpCfPAt6BRe\npositional arguments:\n blockchain\t\t\tName of the blockchain to import into\n target\t\t\t\tId of the contract to import\n\n\n## Hints\nThis seems no fault of Django but is rather \u200bthe default behavior of ArgumentParser (\"By default, ArgumentParser objects line-wrap the description and epilog texts in command-line help messages\"). This can be changed by using a custom \u200bformatter_class, though Django already specifies a custom one (\u200bDjangoHelpFormatter).\nIt seems reasonable, to make it customizable by passing via kwargs to the \u200bBaseCommand.create_parser() (as documented): django/core/management/base.py diff --git a/django/core/management/base.py b/django/core/management/base.py index f0e711ac76..52407807d8 100644 a b class BaseCommand: 286286 Create and return the ``ArgumentParser`` which will be used to 287287 parse the arguments to this command. 288288 \"\"\" 289 kwargs.setdefault(\"formatter_class\", DjangoHelpFormatter) 289290 parser = CommandParser( 290291 prog=\"%s %s\" % (os.path.basename(prog_name), subcommand), 291292 description=self.help or None, 292 formatter_class=DjangoHelpFormatter, 293293 missing_args_message=getattr(self, \"missing_args_message\", None), 294294 called_from_command_line=getattr(self, \"_called_from_command_line\", None), 295295 **kwargs, What do you think?\nLooks good but I don't see a reason for keeping a default that swallows newlines because PEP257 forbids having a multiline sentence on the first line anyway: Multi-line docstrings consist of a summary line just like a one-line docstring, followed by a blank line, followed by a more elaborate description. As such, the default formater which purpose is to unwrap the first sentence encourages breaking PEP 257. And users who are naturally complying with PEP257 will have to override the formatter, it should be the other way around.\nAlso, the not-unwraping formater will also look fine with existing docstrings, it will work for both use cases, while the current one only works for one use case and breaks the other. The default formater should work for both\nReplying to James Pic: Also, the not-unwraping formater will also look fine with existing docstrings, it will work for both use cases, while the current one only works for one use case and breaks the other. The default formater should work for both It seems you think that Python's (not Django's) default behavior should be changed according to PEP 257. I'd recommend to start a discussion in Python's bugtracker. As far as I'm aware the proposed solution will allow users to freely change a formatter, which should be enough from the Django point of view.\nNo, I think that Django's default behavior should match Python's PEP 257, and at the same time, have a default that works in all use cases. I think my report and comments are pretty clear, I fail to understand how you could get my comment completely backward, so, unless you have any specific question about this statement, I'm going to give up on this.\nSo as part of this issue, do we make changes to allow a user to override the formatter through kwargs and also keep DjangoHelpFormatter as the default?\nReplying to Subhankar Hotta: So as part of this issue, do we make changes to allow a user to override the formatter through kwargs and also keep DjangoHelpFormatter as the default? Yes, see comment.\n\nPlease identify and fix the bug. Apply the fix directly to the repository files.\n",
+            "cache_control": {
+              "type": "ephemeral"
+            }
+          }
+        ]
+      }
+    ],
+    "assistant_response": ""
+  }
+}

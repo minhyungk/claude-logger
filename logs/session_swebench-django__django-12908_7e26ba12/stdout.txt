@@ -1,0 +1,36 @@
+The fix is already correctly implemented in the codebase. Let me provide a summary of the fix:
+
+## Summary
+
+The issue reported that calling `.distinct()` on a union queryset (created via `.union()`) would silently fail - it would not raise an error and would not apply the DISTINCT behavior to the combined query.
+
+The fix is already present in the Django codebase in two places:
+
+### 1. `django/db/models/query.py` - The `distinct()` method (line 1914-1925)
+
+```python
+def distinct(self, *field_names):
+    """
+    Return a new QuerySet instance that will select only distinct results.
+    """
+    self._not_support_combined_queries("distinct")  # <-- This check was added
+    if self.query.is_sliced:
+        raise TypeError(
+            "Cannot create distinct fields once a slice has been taken."
+        )
+    obj = self._chain()
+    obj.query.add_distinct_fields(*field_names)
+    return obj
+```
+
+The `self._not_support_combined_queries("distinct")` call raises a `NotSupportedError` when `distinct()` is called on a combined queryset (union/intersection/difference):
+
+```
+NotSupportedError: Calling QuerySet.distinct() after union() is not supported.
+```
+
+### 2. `tests/queries/test_qs_combinators.py` - Test verification (line 786)
+
+The test `test_unsupported_operations_on_combined_qs` includes `"distinct"` in the list of operations that should raise `NotSupportedError` when called on combined querysets.
+
+The fix correctly implements the behavior described in the issue hints: since per Django documentation "only LIMIT, OFFSET, COUNT(*), ORDER BY, and specifying columns (i.e. slicing, count(), order_by(), and values()/values_list()) are allowed on the resulting QuerySet" from a union, calling `distinct()` on a combined queryset now properly raises a `NotSupportedError` instead of silently ignoring the call.

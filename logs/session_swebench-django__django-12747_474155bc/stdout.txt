@@ -1,0 +1,43 @@
+All tests pass. Let me provide a clear summary of the fix:
+
+## Summary
+
+### Root Cause
+
+The `Collector.delete()` method in `django/db/models/deletion.py` has two code paths:
+
+**1. Optimized path** (for simple models with a single object and no dependencies, lines 479–487):
+```python
+if len(self.data) == 1 and len(instances) == 1:
+    instance = list(instances)[0]
+    if self.can_fast_delete(instance):
+        ...
+        count = sql.DeleteQuery(model).delete_batch([instance.pk], self.using)
+        setattr(instance, model._meta.pk.attname, None)
+        return count, {model._meta.label: count}  # ← BUG: includes key even when count=0
+```
+
+**2. Regular path** (for models with FK dependencies, lines 532–538):
+```python
+for model, instances in self.data.items():
+    query = sql.DeleteQuery(model)
+    pk_list = [obj.pk for obj in instances]
+    count = query.delete_batch(pk_list, self.using)
+    if count:  # ← only adds to counter if count > 0
+        deleted_counter[model._meta.label] += count
+```
+
+The regular path (used for models with foreign keys) correctly uses an `if count:` guard so zero-count models are excluded from the result dictionary. But the optimized path (used for simple models without foreign keys) unconditionally includes the model label even when `count == 0`.
+
+### Fix
+
+Changed line 487 from:
+```python
+return count, {model._meta.label: count}
+```
+to:
+```python
+return count, {model._meta.label: count} if count else {}
+```
+
+This makes both paths consistent: when zero objects are deleted, both return `(0, {})` instead of the "simple model" path returning `(0, {'my_app.BlockLibrary': 0})`.

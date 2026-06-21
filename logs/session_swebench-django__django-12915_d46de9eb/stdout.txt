@@ -1,0 +1,16 @@
+All tests pass. Here's a summary of the changes I made and why:
+
+## Summary of Changes
+
+The issue reported that `ASGIStaticFilesHandler` was broken with the error `'NoneType' object is not callable` because `_middleware_chain` was `None`. This happened because:
+
+1. `ASGIStaticFilesHandler.__init__` was not calling `super().__init__()`, unlike its WSGI counterpart `StaticFilesHandler.__init__`
+2. `StaticFilesHandlerMixin.load_middleware` had the wrong signature — it didn't accept the `is_async=True` keyword argument that `ASGIHandler.__init__` passes when calling `self.load_middleware(is_async=True)`
+
+### Changes Made to `django/contrib/staticfiles/handlers.py`:
+
+1. **`StaticFilesHandlerMixin.load_middleware`**: Changed signature from `def load_middleware(self):` to `def load_middleware(self, **kwargs):`. This makes it compatible with both the WSGI handler (which calls `load_middleware()` with no args) and the ASGI handler (which calls `load_middleware(is_async=True)`).
+
+2. **`ASGIStaticFilesHandler.__init__`**: Added `super().__init__()` call, making it consistent with `StaticFilesHandler.__init__`. This properly initializes the handler through the parent class chain (`ASGIHandler.__init__`), which calls `self.load_middleware(is_async=True)` — now safely handled by the updated `StaticFilesHandlerMixin.load_middleware`.
+
+The `get_response_async` method in `StaticFilesHandlerMixin` (and `ASGIStaticFilesHandler`) ensures that `_middleware_chain` is never accessed for static file requests, since static files are served directly without going through the middleware chain (middleware is already loaded in the wrapped `application`).

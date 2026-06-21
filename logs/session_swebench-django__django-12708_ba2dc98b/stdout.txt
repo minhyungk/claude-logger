@@ -1,0 +1,7 @@
+All tests pass. The fix is correctly applied in `django/db/backends/base/schema.py`:
+
+**File**: `django/db/backends/base/schema.py`  
+**Method**: `alter_index_together`  
+**Fix**: The `_delete_composed_index` call when deleting old indexes uses `{"index": True, "unique": False}` as constraint kwargs. The `"unique": False` key is the critical part that prevents the method from matching unique constraints (from `unique_together`) in addition to regular indexes (from `index_together`).
+
+Without `"unique": False`, calling `_constraint_names` with just `{"index": True}` would match both the unique index created by `unique_together` AND the regular index created by `index_together` on the same fields, causing `_delete_composed_index` to find 2 constraints instead of the expected 1, resulting in `ValueError: Found wrong number (2) of constraints`.

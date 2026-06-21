@@ -1,0 +1,27 @@
+The fix for the issue is already correctly applied in the codebase. Here's a summary of what the fix does:
+
+## Summary
+
+The issue was that `django.utils.text.slugify()` was not stripping leading and trailing dashes and underscores from the generated slug.
+
+**The fix** (at line 483 of `django/utils/text.py`) is to call `.strip("-_")` on the result:
+
+```python
+# Before fix (original code would have been):
+value = re.sub(r"[^\w\s-]", "", value.lower()).strip()
+return re.sub(r"[-\s]+", "-", value)
+
+# After fix (current code):
+value = re.sub(r"[^\w\s-]", "", value.lower())
+return re.sub(r"[-\s]+", "-", value).strip("-_")
+```
+
+The key change is adding `.strip("-_")` to strip any leading or trailing dashes and underscores from the final slug.
+
+**Important design decision** (as noted in the hints): The fix only strips leading/trailing underscores and dashes — it does **NOT** convert all underscores to dashes. Internal underscores are preserved (e.g., `"underscore_in-value"` → `"underscore_in-value"`), which is the correct behavior.
+
+**Behavior examples:**
+- `"___This is a test ---"` → `"this-is-a-test"` ✓
+- `"__strip__underscore-value___"` → `"strip__underscore-value"` ✓ (internal `__` preserved)
+- `"--strip-dash-value---"` → `"strip-dash-value"` ✓
+- `"_ -strip-mixed-value _-"` → `"strip-mixed-value"` ✓

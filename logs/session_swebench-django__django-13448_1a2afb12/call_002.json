@@ -1,0 +1,60 @@
+{
+  "meta": {
+    "timestamp": "2026-06-21T07:55:43.000Z",
+    "model": "claude-sonnet-4-6",
+    "session_id": "swebench-django__django-13448_1a2afb12",
+    "call_index": 2,
+    "max_tokens": 32000,
+    "temperature": null,
+    "system_prompt": "x-anthropic-billing-header: cc_version=2.1.179.934; cc_entrypoint=sdk-cli; cch=7a281; You are a Claude agent, built on Anthropic's Claude Agent SDK. CWD: /Users/chanikpark/Aegis-ATV/bench_log/logs/session_swebench-django__django-13448_1a2afb12/workspace/swebench_workspaces/django__django-13448\nDate: 2026-06-21\n\ngitStatus: This is the git status at the start of the conversation. Note that this status is a snapshot in time, and will not update during the conversation.\n\nCurrent branch: main\n\nMain branch (you will usually use this for PRs): main\n\nGit user: Chan Ik Park\n\nStatus:\n(clean)\n\nRecent commits:\nb461519 Refs #36560, CVE-2026-35193 -- Recognized qualified cache-control directives.\n2c5e4af Fixed #37165 -- Updated Async Support topics doc.\nf2f5228 Added CI workflow to expand geospatial library version coverage.\ne877e21 Refs #373 -- Updated FAQ page with partial composite primary key support.\n189c2d2 Fixed #37164 -- Supported subclasses\u2019 _get_lines() in jsonl Deserializer."
+  },
+  "tokens": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "cost": {
+    "input_cost": 0.0,
+    "output_cost": 0.0,
+    "cache_write_cost": 0.0,
+    "cache_read_cost": 0.0,
+    "total_cost": 0.0
+  },
+  "context": {
+    "occupancy_pct": 0.0,
+    "num_turns": 1,
+    "per_message_lengths": [
+      {
+        "role": "user",
+        "length": 8221
+      }
+    ]
+  },
+  "tools": [],
+  "performance": {
+    "latency_ms": 185.5,
+    "stop_reason": ""
+  },
+  "conversation": {
+    "messages": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "text",
+            "text": "<system-reminder>\nAs you answer the user's questions, you can use the following context:\n# currentDate\nToday's date is 2026-06-21.\n\n      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.\n</system-reminder>\n\n"
+          },
+          {
+            "type": "text",
+            "text": "Fix the following issue in the django/django repository.\n\n## Issue\nTest runner setup_databases crashes with \"TEST\": {\"MIGRATE\": False}.\nDescription\n\t\nI'm trying to upgrade a project from Django 3.0 to Django 3.1 and wanted to try out the new \"TEST\": {\"MIGRATE\": False} database setting.\nSadly I'm running into an issue immediately when running ./manage.py test.\nRemoving the \"TEST\": {\"MIGRATE\": False} line allows the tests to run. So this is not blocking the upgrade for us, but it would be nice if we were able to use the new feature to skip migrations during testing.\nFor reference, this project was recently upgraded from Django 1.4 all the way to 3.0 so there might be some legacy cruft somewhere that triggers this.\nHere's the trackeback. I'll try to debug this some more.\nTraceback (most recent call last):\n File \"/usr/local/lib/python3.6/site-packages/django/db/backends/utils.py\", line 84, in _execute\n\treturn self.cursor.execute(sql, params)\npsycopg2.errors.UndefinedTable: relation \"django_admin_log\" does not exist\nLINE 1: ...n_flag\", \"django_admin_log\".\"change_message\" FROM \"django_ad...\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t ^\nThe above exception was the direct cause of the following exception:\nTraceback (most recent call last):\n File \"/usr/local/lib/python3.6/site-packages/django/db/models/sql/compiler.py\", line 1156, in execute_sql\n\tcursor.execute(sql, params)\n File \"/usr/local/lib/python3.6/site-packages/django/db/backends/utils.py\", line 66, in execute\n\treturn self._execute_with_wrappers(sql, params, many=False, executor=self._execute)\n File \"/usr/local/lib/python3.6/site-packages/django/db/backends/utils.py\", line 75, in _execute_with_wrappers\n\treturn executor(sql, params, many, context)\n File \"/usr/local/lib/python3.6/site-packages/django/db/backends/utils.py\", line 84, in _execute\n\treturn self.cursor.execute(sql, params)\n File \"/usr/local/lib/python3.6/site-packages/django/db/utils.py\", line 90, in __exit__\n\traise dj_exc_value.with_traceback(traceback) from exc_value\n File \"/usr/local/lib/python3.6/site-packages/django/db/backends/utils.py\", line 84, in _execute\n\treturn self.cursor.execute(sql, params)\ndjango.db.utils.ProgrammingError: relation \"django_admin_log\" does not exist\nLINE 1: ...n_flag\", \"django_admin_log\".\"change_message\" FROM \"django_ad...\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t ^\nDuring handling of the above exception, another exception occurred:\nTraceback (most recent call last):\n File \"./manage.py\", line 15, in <module>\n\tmain()\n File \"./manage.py\", line 11, in main\n\texecute_from_command_line(sys.argv)\n File \"/usr/local/lib/python3.6/site-packages/django/core/management/__init__.py\", line 401, in execute_from_command_line\n\tutility.execute()\n File \"/usr/local/lib/python3.6/site-packages/django/core/management/__init__.py\", line 395, in execute\n\tself.fetch_command(subcommand).run_from_argv(self.argv)\n File \"/usr/local/lib/python3.6/site-packages/django/core/management/commands/test.py\", line 23, in run_from_argv\n\tsuper().run_from_argv(argv)\n File \"/usr/local/lib/python3.6/site-packages/django/core/management/base.py\", line 330, in run_from_argv\n\tself.execute(*args, **cmd_options)\n File \"/usr/local/lib/python3.6/site-packages/django/core/management/base.py\", line 371, in execute\n\toutput = self.handle(*args, **options)\n File \"/usr/local/lib/python3.6/site-packages/django/core/management/commands/test.py\", line 53, in handle\n\tfailures = test_runner.run_tests(test_labels)\n File \"/usr/local/lib/python3.6/site-packages/django/test/runner.py\", line 695, in run_tests\n\told_config = self.setup_databases(aliases=databases)\n File \"/usr/local/lib/python3.6/site-packages/django/test/runner.py\", line 616, in setup_databases\n\tself.parallel, **kwargs\n File \"/usr/local/lib/python3.6/site-packages/django/test/utils.py\", line 174, in setup_databases\n\tserialize=connection.settings_dict['TEST'].get('SERIALIZE', True),\n File \"/usr/local/lib/python3.6/site-packages/django/db/backends/base/creation.py\", line 78, in create_test_db\n\tself.connection._test_serialized_contents = self.serialize_db_to_string()\n File \"/usr/local/lib/python3.6/site-packages/django/db/backends/base/creation.py\", line 121, in serialize_db_to_string\n\tserializers.serialize(\"json\", get_objects(), indent=None, stream=out)\n File \"/usr/local/lib/python3.6/site-packages/django/core/serializers/__init__.py\", line 128, in serialize\n\ts.serialize(queryset, **options)\n File \"/usr/local/lib/python3.6/site-packages/django/core/serializers/base.py\", line 90, in serialize\n\tfor count, obj in enumerate(queryset, start=1):\n File \"/usr/local/lib/python3.6/site-packages/django/db/backends/base/creation.py\", line 118, in get_objects\n\tyield from queryset.iterator()\n File \"/usr/local/lib/python3.6/site-packages/django/db/models/query.py\", line 360, in _iterator\n\tyield from self._iterable_class(self, chunked_fetch=use_chunked_fetch, chunk_size=chunk_size)\n File \"/usr/local/lib/python3.6/site-packages/django/db/models/query.py\", line 53, in __iter__\n\tresults = compiler.execute_sql(chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size)\n File \"/usr/local/lib/python3.6/site-packages/django/db/models/sql/compiler.py\", line 1159, in execute_sql\n\tcursor.close()\npsycopg2.errors.InvalidCursorName: cursor \"_django_curs_139860821038912_sync_1\" does not exist\n\n\n## Hints\nThanks for this report, now I see that we need to synchronize all apps when MIGRATE is False, see comment. I've totally missed this when reviewing f5ebdfce5c417f9844e86bccc2f12577064d4bad. We can remove the feature from 3.1 if fix is not trivial.\nMocking settings.MIGRATION_MODULES to None for all apps sounds like an easier fix, see draft below: diff --git a/django/db/backends/base/creation.py b/django/db/backends/base/creation.py index 503f7f56fd..3c0338d359 100644 --- a/django/db/backends/base/creation.py +++ b/django/db/backends/base/creation.py @@ -69,6 +69,22 @@ class BaseDatabaseCreation: database=self.connection.alias, run_syncdb=True, ) + else: + try: + old = settings.MIGRATION_MODULES + settings.MIGRATION_MODULES = { + app.label: None + for app in apps.get_app_configs() + } + call_command( + 'migrate', + verbosity=max(verbosity - 1, 0), + interactive=False, + database=self.connection.alias, + run_syncdb=True, + ) + finally: + settings.MIGRATION_MODULES = old # We then serialize the current state of the database into a string # and store it on the connection. This slightly horrific process is so people but I'm not convinced.\nThat seems similar to the solution I've been using for a while: class NoMigrations: \"\"\"Disable migrations for all apps\"\"\" def __getitem__(self, item): return None def __contains__(self, item): return True MIGRATION_MODULES = NoMigrations() (Which I also suggested it as a temporary solution in the original ticket https://code.djangoproject.com/ticket/25388#comment:20) I hadn't actually tried this MIGRATION_MODULES override on this project before. I just did a test run with the override and or some reason I had to add a fixtures = ['myapp/initial_data.json'] line to some of the TestCase classes that worked fine without it before. It seems that these test cases really needed this fixture, but for some reason worked fine when migrations are enabled. Is (test) fixture loading somehow tied to migrations? Anyway, the tests work fine (the same 3 failures) with the MIGRATION_MODULES override, so it seems like it would be a reasonable alternative solution.\nIs (test) fixture loading somehow tied to migrations? I don't think so, you've probably have these data somewhere is migrations.\n\nPlease identify and fix the bug. Apply the fix directly to the repository files.\n",
+            "cache_control": {
+              "type": "ephemeral"
+            }
+          }
+        ]
+      }
+    ],
+    "assistant_response": ""
+  }
+}

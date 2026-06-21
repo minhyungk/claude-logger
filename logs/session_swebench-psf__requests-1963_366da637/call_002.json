@@ -1,0 +1,60 @@
+{
+  "meta": {
+    "timestamp": "2026-06-21T08:03:32.000Z",
+    "model": "claude-sonnet-4-6",
+    "session_id": "swebench-psf__requests-1963_366da637",
+    "call_index": 2,
+    "max_tokens": 32000,
+    "temperature": null,
+    "system_prompt": "x-anthropic-billing-header: cc_version=2.1.179.934; cc_entrypoint=sdk-cli; cch=a5d76; You are a Claude agent, built on Anthropic's Claude Agent SDK. CWD: /Users/chanikpark/Aegis-ATV/bench_log/logs/session_swebench-psf__requests-1963_366da637/workspace/swebench_workspaces/psf__requests-1963\nDate: 2026-06-21\n\ngitStatus: This is the git status at the start of the conversation. Note that this status is a snapshot in time, and will not update during the conversation.\n\nCurrent branch: main\n\nMain branch (you will usually use this for PRs): main\n\nGit user: Chan Ik Park\n\nStatus:\n(clean)\n\nRecent commits:\nd64b9ad Bump https://github.com/astral-sh/ruff-pre-commit (#7515)\n6f66281 Add hasattr checks for remaining protocol isinstance checks (#7505)\n6f205ff Fix `_encode_files` detection for `__getattr__`-based file wrappers (#7502)\n661970d Disable commonly ignored Pyright linting rules (#7497)\nfbd0eb3 Bump https://github.com/astral-sh/ruff-pre-commit (#7503)"
+  },
+  "tokens": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "cost": {
+    "input_cost": 0.0,
+    "output_cost": 0.0,
+    "cache_write_cost": 0.0,
+    "cache_read_cost": 0.0,
+    "total_cost": 0.0
+  },
+  "context": {
+    "occupancy_pct": 0.0,
+    "num_turns": 1,
+    "per_message_lengths": [
+      {
+        "role": "user",
+        "length": 1644
+      }
+    ]
+  },
+  "tools": [],
+  "performance": {
+    "latency_ms": 195.1,
+    "stop_reason": ""
+  },
+  "conversation": {
+    "messages": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "text",
+            "text": "<system-reminder>\nAs you answer the user's questions, you can use the following context:\n# currentDate\nToday's date is 2026-06-21.\n\n      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.\n</system-reminder>\n\n"
+          },
+          {
+            "type": "text",
+            "text": "Fix the following issue in the psf/requests repository.\n\n## Issue\n`Session.resolve_redirects` copies the original request for all subsequent requests, can cause incorrect method selection\nConsider the following redirection chain:\n\n```\nPOST /do_something HTTP/1.1\nHost: server.example.com\n...\n\nHTTP/1.1 303 See Other\nLocation: /new_thing_1513\n\nGET /new_thing_1513\nHost: server.example.com\n...\n\nHTTP/1.1 307 Temporary Redirect\nLocation: //failover.example.com/new_thing_1513\n```\n\nThe intermediate 303 See Other has caused the POST to be converted to\na GET.  The subsequent 307 should preserve the GET.  However, because\n`Session.resolve_redirects` starts each iteration by copying the _original_\nrequest object, Requests will issue a POST!\n\n\n\n## Hints\nUh, yes, that's a bug. =D\n\nThis is also a good example of something that there's no good way to write a test for with httpbin as-is.\n\nThis can be tested though, without httpbin, and I'll tackle this one tonight or this weekend. I've tinkered with `resolve_redirects` enough to be certain enough that I caused this. As such I feel its my responsibility to fix it.\n\n\nPlease identify and fix the bug. Apply the fix directly to the repository files.\n",
+            "cache_control": {
+              "type": "ephemeral"
+            }
+          }
+        ]
+      }
+    ],
+    "assistant_response": ""
+  }
+}

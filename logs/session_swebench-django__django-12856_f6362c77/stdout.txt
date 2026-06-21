@@ -1,0 +1,14 @@
+All 437 tests pass. Let me provide a clear summary of the changes made:
+
+## Summary
+
+### Problem
+When a model has a `UniqueConstraint` with nonexistent fields, Django's system checks wouldn't catch the error unless a database connection was available. This was inconsistent with `unique_together`, which always raises `models.E012` for nonexistent fields regardless of database availability.
+
+The root cause was in `_check_constraints()` in `base.py`: it only called `constraint.check(cls, connection)` inside a database loop, so when `databases=[]` (e.g., when running checks without a database configured), `UniqueConstraint.check()` — which contains the `_check_local_fields()` call — was never executed.
+
+### Fix
+
+**`django/db/models/base.py`** — Modified `_check_constraints()` to check field existence for all constraints **before** the database loop, using `getattr` to safely get `fields` and `include` attributes (which are `UniqueConstraint`-specific). This ensures field existence is always validated regardless of database availability.
+
+**`django/db/models/constraints.py`** — Removed the now-redundant `model._check_local_fields({*self.fields, *self.include}, "constraints")` call from `UniqueConstraint.check()` to avoid duplicate error messages when databases are available.

@@ -1,0 +1,60 @@
+{
+  "meta": {
+    "timestamp": "2026-06-21T08:00:10.000Z",
+    "model": "claude-sonnet-4-6",
+    "session_id": "swebench-django__django-17051_0b987f99",
+    "call_index": 2,
+    "max_tokens": 32000,
+    "temperature": null,
+    "system_prompt": "x-anthropic-billing-header: cc_version=2.1.179.934; cc_entrypoint=sdk-cli; cch=9f3f9; You are a Claude agent, built on Anthropic's Claude Agent SDK. CWD: /Users/chanikpark/Aegis-ATV/bench_log/logs/session_swebench-django__django-17051_0b987f99/workspace/swebench_workspaces/django__django-17051\nDate: 2026-06-21\n\ngitStatus: This is the git status at the start of the conversation. Note that this status is a snapshot in time, and will not update during the conversation.\n\nCurrent branch: main\n\nMain branch (you will usually use this for PRs): main\n\nGit user: Chan Ik Park\n\nStatus:\n(clean)\n\nRecent commits:\nb461519 Refs #36560, CVE-2026-35193 -- Recognized qualified cache-control directives.\n2c5e4af Fixed #37165 -- Updated Async Support topics doc.\nf2f5228 Added CI workflow to expand geospatial library version coverage.\ne877e21 Refs #373 -- Updated FAQ page with partial composite primary key support.\n189c2d2 Fixed #37164 -- Supported subclasses\u2019 _get_lines() in jsonl Deserializer."
+  },
+  "tokens": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "cost": {
+    "input_cost": 0.0,
+    "output_cost": 0.0,
+    "cache_write_cost": 0.0,
+    "cache_read_cost": 0.0,
+    "total_cost": 0.0
+  },
+  "context": {
+    "occupancy_pct": 0.0,
+    "num_turns": 1,
+    "per_message_lengths": [
+      {
+        "role": "user",
+        "length": 3216
+      }
+    ]
+  },
+  "tools": [],
+  "performance": {
+    "latency_ms": 283.3,
+    "stop_reason": ""
+  },
+  "conversation": {
+    "messages": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "text",
+            "text": "<system-reminder>\nAs you answer the user's questions, you can use the following context:\n# currentDate\nToday's date is 2026-06-21.\n\n      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.\n</system-reminder>\n\n"
+          },
+          {
+            "type": "text",
+            "text": "Fix the following issue in the django/django repository.\n\n## Issue\nAllow returning IDs in QuerySet.bulk_create() when updating conflicts.\nDescription\n\t\nCurrently, when using bulk_create with a conflict handling flag turned on (e.g. ignore_conflicts or update_conflicts), the primary keys are not set in the returned queryset, as documented in bulk_create.\nWhile I understand using ignore_conflicts can lead to PostgreSQL not returning the IDs when a row is ignored (see \u200bthis SO thread), I don't understand why we don't return the IDs in the case of update_conflicts.\nFor instance:\nMyModel.objects.bulk_create([MyModel(...)], update_conflicts=True, update_fields=[...], unique_fields=[...])\ngenerates a query without a RETURNING my_model.id part:\nINSERT INTO \"my_model\" (...)\nVALUES (...)\n\tON CONFLICT(...) DO UPDATE ...\nIf I append the RETURNING my_model.id clause, the query is indeed valid and the ID is returned (checked with PostgreSQL).\nI investigated a bit and \u200bthis in Django source is where the returning_fields gets removed.\nI believe we could discriminate the cases differently so as to keep those returning_fields in the case of update_conflicts.\nThis would be highly helpful when using bulk_create as a bulk upsert feature.\n\n\n## Hints\nThanks for the ticket. I've checked and it works on PostgreSQL, MariaDB 10.5+, and SQLite 3.35+: django/db/models/query.py diff --git a/django/db/models/query.py b/django/db/models/query.py index a5b0f464a9..f1e052cb36 100644 a b class QuerySet(AltersData): 18371837 inserted_rows = [] 18381838 bulk_return = connection.features.can_return_rows_from_bulk_insert 18391839 for item in [objs[i : i + batch_size] for i in range(0, len(objs), batch_size)]: 1840 if bulk_return and on_conflict is None: 1840 if bulk_return and (on_conflict is None or on_conflict == OnConflict.UPDATE): 18411841 inserted_rows.extend( 18421842 self._insert( 18431843 item, 18441844 fields=fields, 18451845 using=self.db, 1846 on_conflict=on_conflict, 1847 update_fields=update_fields, 1848 unique_fields=unique_fields, 18461849 returning_fields=self.model._meta.db_returning_fields, 18471850 ) 18481851 ) Would you like to prepare a patch via GitHub PR? (docs changes and tests are required)\nSure I will.\nReplying to Thomas C: Sure I will. Thanks. About tests, it should be enough to add some assertions to existing tests: _test_update_conflicts_two_fields(), test_update_conflicts_unique_fields_pk(), _test_update_conflicts_unique_two_fields(), _test_update_conflicts(), and test_update_conflicts_unique_fields_update_fields_db_column() when connection.features.can_return_rows_from_bulk_insert is True.\nSee \u200bhttps://github.com/django/django/pull/17051\n\nPlease identify and fix the bug. Apply the fix directly to the repository files.\n",
+            "cache_control": {
+              "type": "ephemeral"
+            }
+          }
+        ]
+      }
+    ],
+    "assistant_response": ""
+  }
+}

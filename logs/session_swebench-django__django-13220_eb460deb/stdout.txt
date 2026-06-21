@@ -1,0 +1,22 @@
+All tests pass. Let me provide a summary of the changes made:
+
+## Summary of Changes
+
+**File modified:** `django/core/exceptions.py`
+
+### Problem
+The `ValidationError.__eq__()` method was using `hash(self) == hash(other)` for equality comparison. This is semantically incorrect because:
+1. **Hash collisions** could cause two *different* `ValidationError` instances to appear equal (false positives)
+2. **Unstable sorting in `__hash__`**: The `error_list` hash used `operator.attrgetter("message")` as the sort key, which is not a unique key — if two errors share the same message but have different `code` or `params`, the sort order would be determined by insertion order (stable sort), potentially yielding different hashes for equal multisets
+
+### Fix
+
+**`__eq__` method** — replaced hash-based comparison with direct attribute comparison:
+- **Single error** (has `message`): compares `message`, `code`, and `params` directly. Python's dict `==` already handles params order-independence.
+- **Error dict** (has `error_dict`): delegates to Python's dict `==`, which is key-order-independent and recursively uses `ValidationError.__eq__` for values.
+- **Error list** (has only `error_list`): sorts both lists by element hash (so order-independent) then compares element-by-element with `==`.
+- **Cross-type comparisons** (single vs dict, single vs list, dict vs list): returns `False`.
+
+**`__hash__` method** — changed `error_list` sort key from `operator.attrgetter("message")` to `hash`:
+- Sorting by the element hash (which encodes `message + code + params`) provides a more stable ordering than message-only, handling cases where multiple errors share the same message.
+- The `import operator` was removed since it's no longer used.
