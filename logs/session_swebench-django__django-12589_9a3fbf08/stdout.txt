@@ -1,0 +1,17 @@
+All 1186 tests pass. Let me write a quick summary of what the fix does:
+
+## Summary
+
+The issue was in `django/db/models/sql/query.py` in the `set_group_by` method.
+
+**The Bug:** When an annotation alias (e.g., `status`) has the same name as a column in a joined table (e.g., AB.status), Django generates `GROUP BY "status"` which is ambiguous in PostgreSQL because the database can't determine if it refers to the annotation alias or the table column.
+
+**The Fix:**
+1. Before processing annotations in `set_group_by`, collect all column names from all tables involved in the query (via `alias_map`).
+2. When adding an annotation to the GROUP BY clause, check if the annotation alias collides with any of these column names.
+3. If there's a collision, use a copy (`annotation.copy()`) in the `Ref` instead of the original annotation object. This prevents the compiler from using the `GROUP BY 1` positional reference optimization (which uses Python object identity) and instead forces the full SQL expression to be generated: `GROUP BY (SELECT ...)`. The full expression is unambiguous.
+
+**Key Technical Detail:** The `Ref(alias, annotation.copy())` approach:
+- Still uses the same `group_by_refs` mechanism to prevent duplicate external columns from being added via the SELECT loop
+- Uses a copy of the annotation so the compiler doesn't find it in `selected_expr_positions` (which uses object identity), forcing generation of the full SQL expression
+- Generates `GROUP BY (full subquery expression)` instead of `GROUP BY 1` or `GROUP BY "alias"`, which works correctly on all databases

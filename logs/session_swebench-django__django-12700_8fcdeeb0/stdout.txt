@@ -1,0 +1,42 @@
+All 109 tests pass. Let me provide a summary of what the bug was and what the fix does:
+
+## Summary
+
+### The Bug
+
+The `cleanse_setting()` method in `django/views/debug.py` (`SafeExceptionReporterFilter`) only handled `dict` values recursively, but returned all other iterables (like `list` and `tuple`) **as-is** without inspecting their contents. This meant sensitive data nested inside lists or tuples would be leaked unredacted in Django's debug error pages.
+
+**Example of the problematic code (before fix):**
+```python
+if is_sensitive:
+    cleansed = self.cleansed_substitute
+elif isinstance(value, dict):
+    cleansed = {k: self.cleanse_setting(k, v) for k, v in value.items()}
+else:
+    cleansed = value   # ← lists/tuples returned as-is, no recursion!
+```
+
+### The Fix
+
+Added explicit handling for `list` and `tuple` types to recursively cleanse their contents:
+
+```python
+if is_sensitive:
+    cleansed = self.cleansed_substitute
+elif isinstance(value, dict):
+    cleansed = {k: self.cleanse_setting(k, v) for k, v in value.items()}
+elif isinstance(value, list):
+    cleansed = [self.cleanse_setting("", v) for v in value]   # ← new
+elif isinstance(value, tuple):
+    cleansed = tuple([self.cleanse_setting("", v) for v in value])  # ← new
+else:
+    cleansed = value
+```
+
+When iterating through list/tuple elements, an empty string `""` is used as the key (since list elements don't have keys), allowing any nested `dict` values to still be cleansed based on **their own keys**. This correctly handles deeply nested structures like:
+
+```
+{"something": [{"secret": "value"}, {"token": "value"}]}
+                ↓
+{"something": [{"secret": "********************"}, {"token": "********************"}]}
+```

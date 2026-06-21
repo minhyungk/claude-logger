@@ -1,0 +1,31 @@
+The fix for this issue is already fully implemented in this version of the Django codebase. Let me provide a comprehensive summary of what the fix does:
+
+## Summary
+
+The issue requested adding support for `item_comments` to Django's syndication framework so users can define `item_comments` directly on their `Feed` subclass (just like `item_title`, `item_description`, etc.) without needing the workaround of using `item_extra_kwargs`.
+
+### The fix consists of the following components, all of which are already in place:
+
+**1. `django/utils/feedgenerator.py`** — The `add_item()` method already accepts `comments=None` parameter (line 174) and outputs it as a `<comments>` XML element in RSS feeds (lines 385-386).
+
+**2. `django/contrib/syndication/views.py`** — The `get_feed()` method's `feed.add_item()` call already passes `comments=self._get_dynamic_attr("item_comments", item)` (line 230), which means defining `item_comments` on a `Feed` subclass works automatically.
+
+**3. `tests/syndication_tests/feeds.py`** — Test feed classes already define `item_comments` methods:
+```python
+def item_comments(self, item):
+    return "%scomments" % item.get_absolute_url()
+```
+
+**4. `tests/syndication_tests/tests.py`** — Tests assert that `comments` appears in feed items with the correct URL value.
+
+The key change in `views.py` allows feed authors to write:
+```python
+class MyFeed(views.Feed):
+    def item_comments(self, item):
+        return item.get_comments_url()
+```
+instead of having to use the cumbersome workaround:
+```python
+def item_extra_kwargs(self, item):
+    return {"comments": item.get_comments_url()}
+```

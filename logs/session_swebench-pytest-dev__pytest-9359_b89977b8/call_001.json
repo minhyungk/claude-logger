@@ -1,0 +1,60 @@
+{
+  "meta": {
+    "timestamp": "2026-06-21T08:04:52.000Z",
+    "model": "claude-sonnet-4-6",
+    "session_id": "swebench-pytest-dev__pytest-9359_b89977b8",
+    "call_index": 1,
+    "max_tokens": 32000,
+    "temperature": null,
+    "system_prompt": "x-anthropic-billing-header: cc_version=2.1.179.934; cc_entrypoint=sdk-cli; cch=b00d9; You are a Claude agent, built on Anthropic's Claude Agent SDK. CWD: /Users/chanikpark/Aegis-ATV/bench_log/logs/session_swebench-pytest-dev__pytest-9359_b89977b8/workspace/swebench_workspaces/pytest-dev__pytest-9359\nDate: 2026-06-21\n\ngitStatus: This is the git status at the start of the conversation. Note that this status is a snapshot in time, and will not update during the conversation.\n\nCurrent branch: main\n\nMain branch (you will usually use this for PRs): main\n\nGit user: Chan Ik Park\n\nStatus:\n(clean)\n\nRecent commits:\nd2466e3 [perf] Make ``PrettyPrinter`` format lazily so output can be budget-capped (#14588)\n4904d2b Merge pull request #14628 from bluetech/cherry-pick-release\n4c942a4 Merge pull request #14627 from pytest-dev/release-9.1.1\na07c31a Merge pull request #14596 from bluetech/doc-classmethod\nb375b79 Merge pull request #14622 from chrisburr/fix-14608-initial-conftest-test-subdir"
+  },
+  "tokens": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "cost": {
+    "input_cost": 0.0,
+    "output_cost": 0.0,
+    "cache_write_cost": 0.0,
+    "cache_read_cost": 0.0,
+    "total_cost": 0.0
+  },
+  "context": {
+    "occupancy_pct": 0.0,
+    "num_turns": 1,
+    "per_message_lengths": [
+      {
+        "role": "user",
+        "length": 4229
+      }
+    ]
+  },
+  "tools": [],
+  "performance": {
+    "latency_ms": 164.5,
+    "stop_reason": ""
+  },
+  "conversation": {
+    "messages": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "text",
+            "text": "<system-reminder>\nAs you answer the user's questions, you can use the following context:\n# currentDate\nToday's date is 2026-06-21.\n\n      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.\n</system-reminder>\n\n"
+          },
+          {
+            "type": "text",
+            "text": "Fix the following issue in the pytest-dev/pytest repository.\n\n## Issue\nError message prints extra code line when using assert in python3.9\n<!--\r\nThanks for submitting an issue!\r\n\r\nQuick check-list while reporting bugs:\r\n-->\r\n\r\n- [x] a detailed description of the bug or problem you are having\r\n- [x] output of `pip list` from the virtual environment you are using\r\n- [x] pytest and operating system versions\r\n- [ ] minimal example if possible\r\n### Description\r\nI have a test like this:\r\n```\r\nfrom pytest import fixture\r\n\r\n\r\ndef t(foo):\r\n    return foo\r\n\r\n\r\n@fixture\r\ndef foo():\r\n    return 1\r\n\r\n\r\ndef test_right_statement(foo):\r\n    assert foo == (3 + 2) * (6 + 9)\r\n\r\n    @t\r\n    def inner():\r\n        return 2\r\n\r\n    assert 2 == inner\r\n\r\n\r\n@t\r\ndef outer():\r\n    return 2\r\n```\r\nThe test \"test_right_statement\" fails at the first assertion,but print extra code (the \"t\" decorator) in error details, like this:\r\n\r\n```\r\n ============================= test session starts =============================\r\nplatform win32 -- Python 3.9.6, pytest-6.2.5, py-1.10.0, pluggy-0.13.1 -- \r\ncachedir: .pytest_cache\r\nrootdir: \r\nplugins: allure-pytest-2.9.45\r\ncollecting ... collected 1 item\r\n\r\ntest_statement.py::test_right_statement FAILED                           [100%]\r\n\r\n================================== FAILURES ===================================\r\n____________________________ test_right_statement _____________________________\r\n\r\nfoo = 1\r\n\r\n    def test_right_statement(foo):\r\n>       assert foo == (3 + 2) * (6 + 9)\r\n    \r\n        @t\r\nE       assert 1 == 75\r\nE         +1\r\nE         -75\r\n\r\ntest_statement.py:14: AssertionError\r\n=========================== short test summary info ===========================\r\nFAILED test_statement.py::test_right_statement - assert 1 == 75\r\n============================== 1 failed in 0.12s ==============================\r\n```\r\nAnd the same thing **did not** happen when using python3.7.10\uff1a\r\n```\r\n============================= test session starts =============================\r\nplatform win32 -- Python 3.7.10, pytest-6.2.5, py-1.11.0, pluggy-1.0.0 -- \r\ncachedir: .pytest_cache\r\nrootdir: \r\ncollecting ... collected 1 item\r\n\r\ntest_statement.py::test_right_statement FAILED                           [100%]\r\n\r\n================================== FAILURES ===================================\r\n____________________________ test_right_statement _____________________________\r\n\r\nfoo = 1\r\n\r\n    def test_right_statement(foo):\r\n>       assert foo == (3 + 2) * (6 + 9)\r\nE       assert 1 == 75\r\nE         +1\r\nE         -75\r\n\r\ntest_statement.py:14: AssertionError\r\n=========================== short test summary info ===========================\r\nFAILED test_statement.py::test_right_statement - assert 1 == 75\r\n============================== 1 failed in 0.03s ==============================\r\n```\r\nIs there some problems when calculate the statement lineno?\r\n\r\n### pip list \r\n```\r\n$ pip list\r\nPackage            Version\r\n------------------ -------\r\natomicwrites       1.4.0\r\nattrs              21.2.0\r\ncolorama           0.4.4\r\nimportlib-metadata 4.8.2\r\niniconfig          1.1.1\r\npackaging          21.3\r\npip                21.3.1\r\npluggy             1.0.0\r\npy                 1.11.0\r\npyparsing          3.0.6\r\npytest             6.2.5\r\nsetuptools         59.4.0\r\ntoml               0.10.2\r\ntyping_extensions  4.0.0\r\nzipp               3.6.0\r\n\r\n```\r\n### pytest and operating system versions\r\npytest 6.2.5\r\nWindows 10 \r\nSeems to happen in python 3.9,not 3.7\r\n\n\n\nPlease identify and fix the bug. Apply the fix directly to the repository files.\n",
+            "cache_control": {
+              "type": "ephemeral"
+            }
+          }
+        ]
+      }
+    ],
+    "assistant_response": ""
+  }
+}

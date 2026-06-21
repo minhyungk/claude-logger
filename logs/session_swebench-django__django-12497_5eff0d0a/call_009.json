@@ -1,0 +1,335 @@
+{
+  "meta": {
+    "timestamp": "2026-06-21T05:36:58.000Z",
+    "model": "claude-sonnet-4-6",
+    "session_id": "swebench-django__django-12497_5eff0d0a",
+    "call_index": 9,
+    "max_tokens": 32000,
+    "temperature": null,
+    "system_prompt": "x-anthropic-billing-header: cc_version=2.1.179.934; cc_entrypoint=sdk-cli; cch=728f5; You are a Claude agent, built on Anthropic's Claude Agent SDK. CWD: /Users/chanikpark/Aegis-ATV/bench_log/logs/session_swebench-django__django-12497_5eff0d0a/workspace/swebench_workspaces/django__django-12497\nDate: 2026-06-20\n\ngitStatus: This is the git status at the start of the conversation. Note that this status is a snapshot in time, and will not update during the conversation.\n\nCurrent branch: main\n\nMain branch (you will usually use this for PRs): main\n\nGit user: Chan Ik Park\n\nStatus:\n(clean)\n\nRecent commits:\nb461519 Refs #36560, CVE-2026-35193 -- Recognized qualified cache-control directives.\n2c5e4af Fixed #37165 -- Updated Async Support topics doc.\nf2f5228 Added CI workflow to expand geospatial library version coverage.\ne877e21 Refs #373 -- Updated FAQ page with partial composite primary key support.\n189c2d2 Fixed #37164 -- Supported subclasses\u2019 _get_lines() in jsonl Deserializer."
+  },
+  "tokens": {
+    "input_tokens": 1,
+    "output_tokens": 977,
+    "cache_creation_input_tokens": 529,
+    "cache_read_input_tokens": 5466
+  },
+  "cost": {
+    "input_cost": 3e-06,
+    "output_cost": 0.014655,
+    "cache_write_cost": 0.00198375,
+    "cache_read_cost": 0.0016398,
+    "total_cost": 0.01828155
+  },
+  "context": {
+    "occupancy_pct": 3.0,
+    "num_turns": 15,
+    "per_message_lengths": [
+      {
+        "role": "user",
+        "length": 1535
+      },
+      {
+        "role": "assistant",
+        "length": 952
+      },
+      {
+        "role": "user",
+        "length": 137
+      },
+      {
+        "role": "assistant",
+        "length": 361
+      },
+      {
+        "role": "user",
+        "length": 1418
+      },
+      {
+        "role": "assistant",
+        "length": 355
+      },
+      {
+        "role": "user",
+        "length": 2467
+      },
+      {
+        "role": "assistant",
+        "length": 998
+      },
+      {
+        "role": "user",
+        "length": 2639
+      },
+      {
+        "role": "assistant",
+        "length": 2029
+      },
+      {
+        "role": "user",
+        "length": 2589
+      },
+      {
+        "role": "assistant",
+        "length": 250
+      },
+      {
+        "role": "user",
+        "length": 137
+      },
+      {
+        "role": "assistant",
+        "length": 186
+      },
+      {
+        "role": "user",
+        "length": 1588
+      }
+    ]
+  },
+  "tools": [
+    {
+      "index": 0,
+      "id": "toolu_014yeUDNyVLD6rU22uEJh2RH",
+      "name": "Bash",
+      "input": {
+        "command": "grep -n \"ForeignKey\\|symmetrical\" /Users/chanikpark/Aegis-ATV/bench_log/logs/session_swebench-django__django-12497_5eff0d0a/workspace/swebench_workspaces/django__django-12497/django/db/models/fields/related.py | grep -i \"hint\\|recursive\\|symmetrical\" | head -20",
+        "description": "Search for ForeignKey or symmetrical in hints"
+      },
+      "result": {
+        "content": "1476:        symmetrical=None,\n1498:        if symmetrical is None:\n1499:            symmetrical = to == RECURSIVE_RELATIONSHIP_CONSTANT\n1512:            symmetrical=symmetrical,\n1569:        if self.remote_field.symmetrical and self._related_name:\n1573:                    'with a symmetrical relationship, e.g. to \"self\".',\n2053:        # related name on symmetrical relations for internal reasons. The\n2058:        if self.remote_field.symmetrical and (",
+        "is_error": false
+      }
+    }
+  ],
+  "performance": {
+    "latency_ms": 16473.9,
+    "stop_reason": "tool_use"
+  },
+  "conversation": {
+    "messages": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "text",
+            "text": "<system-reminder>\nAs you answer the user's questions, you can use the following context:\n# currentDate\nToday's date is 2026-06-20.\n\n      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.\n</system-reminder>\n\n"
+          },
+          {
+            "type": "text",
+            "text": "Fix the following issue in the django/django repository.\n\n## Issue\nWrong hint about recursive relationship.\nDescription\n\t \n\t\t(last modified by Matheus Cunha Motta)\n\t \nWhen there's more than 2 ForeignKeys in an intermediary model of a m2m field and no through_fields have been set, Django will show an error with the following hint:\nhint=(\n\t'If you want to create a recursive relationship, '\n\t'use ForeignKey(\"%s\", symmetrical=False, through=\"%s\").'\nBut 'symmetrical' and 'through' are m2m keyword arguments, not ForeignKey.\nThis was probably a small mistake where the developer thought ManyToManyField but typed ForeignKey instead. And the symmetrical=False is an outdated requirement to recursive relationships with intermediary model to self, not required since 3.0. I'll provide a PR with a proposed correction shortly after.\nEdit: fixed description.\n\n\n## Hints\nHere's a PR: \u200bhttps://github.com/django/django/pull/12497 Edit: forgot to run tests and there was an error detected in the PR. I'll try to fix and run tests before submitting again.\n\nPlease identify and fix the bug. Apply the fix directly to the repository files.\n"
+          }
+        ]
+      },
+      {
+        "role": "assistant",
+        "content": [
+          {
+            "type": "thinking",
+            "thinking": "Let me find the relevant code in the Django repository that contains this wrong hint about recursive relationships.",
+            "signature": "ErwCCmUIDhgCKkAtlcKKt2rlAEYbQbSchPws/AxPJbWwJBfYVfRwhqEGr0u5Qj/3CxYZb2X3YN6LBWhxGsLIjAA2zih5jFlsQJANMhFjbGF1ZGUtc29ubmV0LTQtNjgAQgh0aGlua2luZxIMMyhzfUR9TnPdQOF0Ggzjgaj7iK/8fdM7cw4iMBODLZeMAimUzE2aUgJHbMH5ibScb38X+f56RBYiWiMMSWEDK8k8C6NTjJLz72R3HSqEAVagWRbrrw0JOf9pbyrKaOmuwbC+7JYctqzK750LoYfKBEPdkaqXwtHQjmMRF10ABPez9CPPkoGXeZym5QCAN6N9yn+vP0BYthYnqyIT75SKXie2+VsQAg+xDJJyy3Z+wVW2H1xCc1/tYGnswAlJrJ8mFnrPOGU32Q/dl0e1tYy0oyxeTBgB"
+          },
+          {
+            "type": "tool_use",
+            "id": "toolu_01LjUbMUV2EF3wfDzwGbZm81",
+            "name": "Bash",
+            "input": {
+              "command": "grep -r \"use ForeignKey\" /Users/chanikpark/Aegis-ATV/bench_log/logs/session_swebench-django__django-12497_5eff0d0a/workspace/swebench_workspaces/django__django-12497 --include=\"*.py\" -n",
+              "description": "Search for the wrong hint text in Python files"
+            }
+          }
+        ]
+      },
+      {
+        "role": "user",
+        "content": [
+          {
+            "tool_use_id": "toolu_01LjUbMUV2EF3wfDzwGbZm81",
+            "type": "tool_result",
+            "content": "(Bash completed with no output)",
+            "is_error": false
+          }
+        ]
+      },
+      {
+        "role": "assistant",
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "toolu_01UFzNM2yoYNqpRZGjsdPgrP",
+            "name": "Bash",
+            "input": {
+              "command": "grep -r \"recursive relationship\" /Users/chanikpark/Aegis-ATV/bench_log/logs/session_swebench-django__django-12497_5eff0d0a/workspace/swebench_workspaces/django__django-12497 --include=\"*.py\" -n",
+              "description": "Search for recursive relationship hint text"
+            }
+          }
+        ]
+      },
+      {
+        "role": "user",
+        "content": [
+          {
+            "tool_use_id": "toolu_01UFzNM2yoYNqpRZGjsdPgrP",
+            "type": "tool_result",
+            "content": "/Users/chanikpark/Aegis-ATV/bench_log/logs/session_swebench-django__django-12497_5eff0d0a/workspace/swebench_workspaces/django__django-12497/tests/invalid_models_tests/test_relative_fields.py:183:                        \"If you want to create a recursive relationship, use \"\n/Users/chanikpark/Aegis-ATV/bench_log/logs/session_swebench-django__django-12497_5eff0d0a/workspace/swebench_workspaces/django__django-12497/tests/invalid_models_tests/test_relative_fields.py:222:                        \"If you want to create a recursive relationship, use \"\n/Users/chanikpark/Aegis-ATV/bench_log/logs/session_swebench-django__django-12497_5eff0d0a/workspace/swebench_workspaces/django__django-12497/django/db/migrations/utils.py:39:                    \"recursive relationships.\"\n/Users/chanikpark/Aegis-ATV/bench_log/logs/session_swebench-django__django-12497_5eff0d0a/workspace/swebench_workspaces/django__django-12497/django/db/models/fields/related.py:1696:                                \"If you want to create a recursive relationship, \"\n/Users/chanikpark/Aegis-ATV/bench_log/logs/session_swebench-django__django-12497_5eff0d0a/workspace/swebench_workspaces/django__django-12497/django/db/models/fields/related.py:1717:                                \"If you want to create a recursive relationship, \"",
+            "is_error": false
+          }
+        ]
+      },
+      {
+        "role": "assistant",
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "toolu_01DUUvPuP52TRpHrbfbjqrHd",
+            "name": "Bash",
+            "input": {
+              "command": "sed -n '1685,1730p' /Users/chanikpark/Aegis-ATV/bench_log/logs/session_swebench-django__django-12497_5eff0d0a/workspace/swebench_workspaces/django__django-12497/django/db/models/fields/related.py",
+              "description": "View the relevant section of related.py"
+            }
+          }
+        ]
+      },
+      {
+        "role": "user",
+        "content": [
+          {
+            "tool_use_id": "toolu_01DUUvPuP52TRpHrbfbjqrHd",
+            "type": "tool_result",
+            "content": "                    errors.append(\n                        checks.Error(\n                            (\n                                \"The model is used as an intermediate model by \"\n                                \"'%s', but it has more than one foreign key \"\n                                \"from '%s', which is ambiguous. You must specify \"\n                                \"which foreign key Django should use via the \"\n                                \"through_fields keyword argument.\"\n                            )\n                            % (self, from_model_name),\n                            hint=(\n                                \"If you want to create a recursive relationship, \"\n                                'use ManyToManyField(\"%s\", through=\"%s\").'\n                            )\n                            % (\n                                RECURSIVE_RELATIONSHIP_CONSTANT,\n                                relationship_model_name,\n                            ),\n                            obj=self,\n                            id=\"fields.E334\",\n                        )\n                    )\n\n                if seen_to > 1 and not self.remote_field.through_fields:\n                    errors.append(\n                        checks.Error(\n                            \"The model is used as an intermediate model by \"\n                            \"'%s', but it has more than one foreign key \"\n                            \"to '%s', which is ambiguous. You must specify \"\n                            \"which foreign key Django should use via the \"\n                            \"through_fields keyword argument.\" % (self, to_model_name),\n                            hint=(\n                                \"If you want to create a recursive relationship, \"\n                                'use ManyToManyField(\"%s\", through=\"%s\").'\n                            )\n                            % (\n                                RECURSIVE_RELATIONSHIP_CONSTANT,\n                                relationship_model_name,\n                            ),\n                            obj=self,\n                            id=\"fields.E335\",\n                        )\n                    )\n\n                if seen_from == 0 or seen_to == 0:\n                    errors.append(",
+            "is_error": false
+          }
+        ]
+      },
+      {
+        "role": "assistant",
+        "content": [
+          {
+            "type": "thinking",
+            "thinking": "The code in the repository already has `ManyToManyField` (not `ForeignKey`). Let me check the test file to see what's expected there.",
+            "signature": "Es4CCmUIDhgCKkDTDIc2hvl0NFGkWh5F4q561zyJH6PQtetwyU8AUHtn6FD2F/YRv1JYShjHYWegd10iDiX66tnbg3iMwOUooJ4KMhFjbGF1ZGUtc29ubmV0LTQtNjgAQgh0aGlua2luZxIMjpBC/OX89JSlPF+MGgxSsaMwiVO6bYXT+LMiMOu3Jj//RHdDGipNTZo6KTgiS3BB+emSgOWM2n2eh04jFwzE6AmH89My+NlXV6WNkiqWAWoewNzdFnwR+aZgug41q8bLdHj6hGG3z7DbqTQz8L+3AyqPE13/IgFydfd5vrfJOz2Zz4hjcvdzXfnVyMSwOAD9S1Yft5gwlQnhSO+eJN1KDl9zqfxOuYuR/mlnx70q3P6IgmENCZOqDMDhfWYQaV8emxLkGms9VteflZLUjaw0cuTOLDgInL01+ScJysfvmyXUTIap/RgB"
+          },
+          {
+            "type": "tool_use",
+            "id": "toolu_01VfHv9u1HBSFkwW4a5zeifk",
+            "name": "Bash",
+            "input": {
+              "command": "sed -n '175,235p' /Users/chanikpark/Aegis-ATV/bench_log/logs/session_swebench-django__django-12497_5eff0d0a/workspace/swebench_workspaces/django__django-12497/tests/invalid_models_tests/test_relative_fields.py",
+              "description": "View the relevant test section"
+            }
+          }
+        ]
+      },
+      {
+        "role": "user",
+        "content": [
+          {
+            "tool_use_id": "toolu_01VfHv9u1HBSFkwW4a5zeifk",
+            "type": "tool_result",
+            "content": "            [\n                Error(\n                    \"The model is used as an intermediate model by \"\n                    \"'invalid_models_tests.Group.field', but it has more than one \"\n                    \"foreign key from 'Group', which is ambiguous. You must \"\n                    \"specify which foreign key Django should use via the \"\n                    \"through_fields keyword argument.\",\n                    hint=(\n                        \"If you want to create a recursive relationship, use \"\n                        'ManyToManyField(\"self\", through=\"AmbiguousRelationship\").'\n                    ),\n                    obj=field,\n                    id=\"fields.E334\",\n                ),\n            ],\n        )\n\n    def test_ambiguous_relationship_model_to(self):\n        class Person(models.Model):\n            pass\n\n        class Group(models.Model):\n            field = models.ManyToManyField(\n                \"Person\", through=\"AmbiguousRelationship\", related_name=\"tertiary\"\n            )\n\n        class AmbiguousRelationship(models.Model):\n            # Too much foreign keys to Person.\n            first_person = models.ForeignKey(\n                Person, models.CASCADE, related_name=\"first\"\n            )\n            second_person = models.ForeignKey(\n                Person, models.CASCADE, related_name=\"second\"\n            )\n            second_model = models.ForeignKey(Group, models.CASCADE)\n\n        field = Group._meta.get_field(\"field\")\n        self.assertEqual(\n            field.check(from_model=Group),\n            [\n                Error(\n                    \"The model is used as an intermediate model by \"\n                    \"'invalid_models_tests.Group.field', but it has more than one \"\n                    \"foreign key to 'Person', which is ambiguous. You must specify \"\n                    \"which foreign key Django should use via the through_fields \"\n                    \"keyword argument.\",\n                    hint=(\n                        \"If you want to create a recursive relationship, use \"\n                        'ManyToManyField(\"self\", through=\"AmbiguousRelationship\").'\n                    ),\n                    obj=field,\n                    id=\"fields.E335\",\n                ),\n            ],\n        )\n\n    def test_relationship_model_with_foreign_key_to_wrong_model(self):\n        class WrongModel(models.Model):\n            pass\n\n        class Person(models.Model):",
+            "is_error": false
+          }
+        ]
+      },
+      {
+        "role": "assistant",
+        "content": [
+          {
+            "type": "thinking",
+            "thinking": "The current code in the repository already has `ManyToManyField` instead of `ForeignKey`. Let me check what's in the original issue - it says there's also `symmetrical=False` that should be removed. Let me look at the actual current state of the file more carefully.\n\nLooking at line 1696-1700:\n```python\nhint=(\n    \"If you want to create a recursive relationship, \"\n    'use ManyToManyField(\"%s\", through=\"%s\").'\n)\n```\n\nWait, it already says `ManyToManyField` without `symmetrical=False`. So is the fix already applied? Let me check the git history to see the original state.",
+            "signature": "EooGCmUIDhgCKkBT/YJF5MG0hcMiupoa7+vHHXi7D7n8Cm89Q/sTQ1VBwtu7jcNj/HfcokzVgKKT3B9GbAHBUw5AzGmrNVWsxEUOMhFjbGF1ZGUtc29ubmV0LTQtNjgAQgh0aGlua2luZxIMyFuwiEpJXHAbEiC+Ggzt3HMwG0xqqNlaAEkiMIEwzF18siKwYAzFKD8Ox/wKQS9w4FjkNNk/AbgUohVxKZb1AHtwKLxZF3EmaMihRSrSBPdI+i7Mk5dylxkQIAfM+zKKjRx0Exksl9bEITG2qkl3PfEqUpupaN2K5i5DNa3dnUqa6Gu5IEqAHxYImLXudrbnTGDpwYmcKqwM+yui2C5VT/bXX1DVDmT7tPclNp30q2onOM7Z+3Ohnu4kiqAb4RWZJQ5h00McilPVkZVc4B9UWAFlpPeYMb8QTOBlsB7wVezDK0V3xTgwRPWMj1blc5PIyZRVKAccjow7dWwo52BLrdojQvbg2gjvy4JntJWUaoOJ0GtML3OG6hD4lNxWHbdkr0xZa37YE84bMVFMGCtqlK9RW7DDZzzE3IsWj2mVzvi1ACUrkTf3hV9Fjz2C0VswEQVJ9Fy1803LBTaJIdo5UYYs0ObLONdkll+rDW7i+Rz7AmoajMwUgBwzAecKD7rMs6aiAU9VGa/mhsXnwWCpChztVRrttxwkVL/aJLft+vSPrqb8GLtUU+6akF9CAKaEZ6lQrc1T29vQna1NqYEKe/aIUrKAZdHsPcvfuk6kkz5SOygzom8S53vsQ4W9D6yyYU5Az/kUdPbgWC7qt6uMO3E0HnwIFbI/uj6nSwOzdH0tvcH86sSzIycXdQKAF940lrC2i8QBabnO3IrD9wQbLeaKwsr+19iViqhlI4bjmvE04G02C1qyhkGuoTs706pnJbaDQnCl2wjS4nJ60NtZl3USJcuXDuq/Xwp6ZegCaT13/DIsbg9o2BJJzsuHYbj5X/60LjePDwYUYsrK/cNopOuj1lgpaKyh5A9zkHaQ11RlpjJrE/Jc5kmg/F1j3v+KghgB"
+          },
+          {
+            "type": "tool_use",
+            "id": "toolu_01BEPy5iESAvCtPiK429JErx",
+            "name": "Bash",
+            "input": {
+              "command": "git log --oneline -10",
+              "description": "Show recent git commits"
+            }
+          },
+          {
+            "type": "tool_use",
+            "id": "toolu_01TJPjeo3iHp1x4upgNfTNBv",
+            "name": "Bash",
+            "input": {
+              "command": "git log --all --oneline | head -20",
+              "description": "Show all git history"
+            }
+          }
+        ]
+      },
+      {
+        "role": "user",
+        "content": [
+          {
+            "tool_use_id": "toolu_01BEPy5iESAvCtPiK429JErx",
+            "type": "tool_result",
+            "content": "b461519 Refs #36560, CVE-2026-35193 -- Recognized qualified cache-control directives.\n2c5e4af Fixed #37165 -- Updated Async Support topics doc.\nf2f5228 Added CI workflow to expand geospatial library version coverage.\ne877e21 Refs #373 -- Updated FAQ page with partial composite primary key support.\n189c2d2 Fixed #37164 -- Supported subclasses\u2019 _get_lines() in jsonl Deserializer.\n77d0c9d Fixed #37168 -- Made admin display database defaults as empty values.\naa0efc9 Fixed #37146 -- Improved new-user experience of README's Trac link.\nca5746b Fixed #37143 -- Added missing chunk_size=None check to QuerySet.aiterator().\n0739450 Added test for updating a model instance with a db_default.\ncf88938 Refs CVE-2026-6873 -- Moved deprecation note for SIGNED_COOKIE_LEGACY_SALT_FALLBACK.",
+            "is_error": false
+          },
+          {
+            "tool_use_id": "toolu_01TJPjeo3iHp1x4upgNfTNBv",
+            "type": "tool_result",
+            "content": "b461519 Refs #36560, CVE-2026-35193 -- Recognized qualified cache-control directives.\n2c5e4af Fixed #37165 -- Updated Async Support topics doc.\nf2f5228 Added CI workflow to expand geospatial library version coverage.\ne877e21 Refs #373 -- Updated FAQ page with partial composite primary key support.\n189c2d2 Fixed #37164 -- Supported subclasses\u2019 _get_lines() in jsonl Deserializer.\n77d0c9d Fixed #37168 -- Made admin display database defaults as empty values.\naa0efc9 Fixed #37146 -- Improved new-user experience of README's Trac link.\nca5746b Fixed #37143 -- Added missing chunk_size=None check to QuerySet.aiterator().\n0739450 Added test for updating a model instance with a db_default.\ncf88938 Refs CVE-2026-6873 -- Moved deprecation note for SIGNED_COOKIE_LEGACY_SALT_FALLBACK.\ne452715 Refs #36593 -- Added missing deprecation note for select_related() with no arguments.\nc37cc70 Refs #36905 -- Added missing deprecation note for safe parameter of JSONResponse.\n5c71977 Refs #34118 -- Removed further asgiref coroutine detection shims in tests.\nf3e66a3 Refs #37139 -- Renamed helper inside _is_pk_set().\n14988f1 Fixed #37176 -- Made Action importable from django.contrib.admin.\n0943448 Fixed #37152 -- Raised ValueError when Bcc is used in EmailMessage headers.\nb5b53af Refs #36532 -- Optimized CSP decorator async checking.\n13107fa Fixed #36881 -- Corrected documentation for ModelAdmin.search_fields.\nb3af340 Refs #37142 -- Removed docs for django.utils.warnings.django_file_prefixes().\nf891010 Fixed #37163 -- Optimized @user_passes_test async checking.",
+            "is_error": false
+          }
+        ]
+      },
+      {
+        "role": "assistant",
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "toolu_016mSJLiyjjvY932oT99k4DT",
+            "name": "Bash",
+            "input": {
+              "command": "git log --all --oneline | grep -i \"12497\\|recursive\\|ForeignKey\\|hint\"",
+              "description": "Search commit history for issue 12497 or related fixes"
+            }
+          }
+        ]
+      },
+      {
+        "role": "user",
+        "content": [
+          {
+            "tool_use_id": "toolu_016mSJLiyjjvY932oT99k4DT",
+            "type": "tool_result",
+            "content": "(Bash completed with no output)",
+            "is_error": false
+          }
+        ]
+      },
+      {
+        "role": "assistant",
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "toolu_01Gd7rQZZobwLPzNVba6VKs8",
+            "name": "Bash",
+            "input": {
+              "command": "git log --all --oneline | tail -20",
+              "description": "Check all commits in repository"
+            }
+          }
+        ]
+      },
+      {
+        "role": "user",
+        "content": [
+          {
+            "tool_use_id": "toolu_01Gd7rQZZobwLPzNVba6VKs8",
+            "type": "tool_result",
+            "content": "c0b12e1 Downgraded node to 24.15.0 in Github Actions configuration.\n5b31093 Removed unnecessary direct dev dependency on puppeteer.\n2c8c0ca Fixed #36225 -- Coped with lack of get_by_natural_key() in createsuperuser.\n525e51f Fixed #35596 -- Removed mention of unlimited results from QuerySet.get().\n4a5e90c Updated links to severity levels in release notes.\n8f84f26 Fixed #37019 -- Updated login() and logout() to set request.auser.\n6e15ac8 Fixed #36905 -- Deprecated the safe parameter of JSONResponse.\n7ae70e7 Refactored release script to support testing in isolation.\n7436661 Included commit hash in checksum file when building artifacts for release.\n41357f4 Fixed #37065 -- Doc'd method_decorator usage on dispatch for async views.\na6977ee Added stub release notes and release date for 6.0.6 and 5.2.15.\n0a2bc6d Bumped versions in Github actions configuration.\ndef2632 Used Node.js 24 for GitHub actions.\n8357994 Removed version numbers from example tox -l output.\ncc7ba81 Bumped versions in pre-commit and npm configurations.\n9bd58b7 Refs #35514 -- Removed specific Django versions from outside deprecated blocks.\n3be19dc Refs #35870 -- Moved deprecated notice at the bottom for USE_BLANK_CHOICE_DASH.\n9551424 Fixed #37116 -- Explained why a code is useful in a ValidationError.\n0325492 Corrected indentation in topics/http/shortcuts.txt.\na3a74e9 Added advancing deprecations to preparing for next release instructions.",
+            "is_error": false,
+            "cache_control": {
+              "type": "ephemeral"
+            }
+          }
+        ]
+      }
+    ],
+    "assistant_response": ""
+  }
+}

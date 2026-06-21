@@ -1,0 +1,27 @@
+The fix for this issue is already correctly applied in the codebase. Here's a summary of what the fix entails and why it's correct:
+
+## Summary of the Fix
+
+The bug was in `django/db/backends/base/creation.py` in the `deserialize_db_from_string` method. The original code saved deserialized objects directly without wrapping them in a transaction:
+
+```python
+# ORIGINAL BUGGY CODE:
+for obj in serializers.deserialize("json", data, using=self.connection.alias):
+    obj.save()
+```
+
+This caused integrity errors when objects with foreign keys were serialized (and thus deserialized) in an order where an object referencing another was encountered before the referenced object existed.
+
+## The Fix (Already Applied)
+
+The current code in `django/db/backends/base/creation.py` (lines 173-192) correctly implements the fix:
+
+1. **Wraps in `atomic()`** - This allows all objects to be saved within a single transaction, so database-level constraint checks are deferred until the end (on most databases that support deferred constraint checking).
+
+2. **Uses `constraint_checks_disabled()`** - MySQL/InnoDB does NOT defer constraint checks to the end of a transaction, so this context manager explicitly disables them for MySQL compatibility (it's a no-op on other databases).
+
+3. **Calls `check_constraints()`** - After disabling constraint checks and saving all objects, constraints are manually verified to ensure data integrity.
+
+This mirrors how Django's `loaddata` management command handles the same problem, which uses both `transaction.atomic()` and `connection.constraint_checks_disabled()`.
+
+The corresponding test models (`ObjectSelfReference`, `CircularA`, `CircularB`) are defined in `tests/backends/models.py`, and the test cases (`test_circular_reference`, `test_self_reference`, `test_circular_reference_with_natural_key`) are in `tests/backends/base/test_creation.py` to verify the fix works correctly for various reference patterns (circular FK references, self-references, and circular references with natural keys).

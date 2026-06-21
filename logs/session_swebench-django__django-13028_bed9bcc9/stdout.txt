@@ -1,0 +1,24 @@
+The fix is already applied to the repository. Here's a summary of what was done and why it works:
+
+## The Bug
+
+In `django/db/models/sql/query.py`, the `check_filterable` method originally checked:
+```python
+if not getattr(expression, 'filterable', True):
+```
+
+This was too broad — it would raise `NotSupportedError` for **any** object passed as a filter value that happened to have a `filterable` attribute set to `False`, including plain Django model instances (like `ProductMetaDataType`) that have a database field named `filterable` set to `False`.
+
+## The Fix
+
+The check was narrowed to only apply to **expression objects** (i.e., objects that have a `resolve_expression` method, which is the marker for Django query expressions):
+
+```python
+if hasattr(expression, "resolve_expression") and not getattr(
+    expression, "filterable", True
+):
+```
+
+Now, the `filterable` attribute is only inspected on actual Django expression objects (subclasses of `BaseExpression`), not on plain model instances used as filter values. A model instance like `ProductMetaDataType` doesn't have `resolve_expression`, so it safely bypasses the check — even if it has a database field called `filterable` set to `False`.
+
+The accompanying test at `tests/queries/tests.py` (`test_field_with_filterable`) verifies that filtering with an `ExtraInfo` instance (which has a `filterable` BooleanField) works correctly without raising `NotSupportedError`.

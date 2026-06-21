@@ -1,0 +1,112 @@
+{
+  "meta": {
+    "timestamp": "2026-06-21T07:07:18.000Z",
+    "model": "claude-sonnet-4-6",
+    "session_id": "swebench-django__django-13028_bed9bcc9",
+    "call_index": 3,
+    "max_tokens": 32000,
+    "temperature": null,
+    "system_prompt": "x-anthropic-billing-header: cc_version=2.1.179.934; cc_entrypoint=sdk-cli; cch=d8ca9; You are a Claude agent, built on Anthropic's Claude Agent SDK. CWD: /Users/chanikpark/Aegis-ATV/bench_log/logs/session_swebench-django__django-13028_bed9bcc9/workspace/swebench_workspaces/django__django-13028\nDate: 2026-06-21\n\ngitStatus: This is the git status at the start of the conversation. Note that this status is a snapshot in time, and will not update during the conversation.\n\nCurrent branch: main\n\nMain branch (you will usually use this for PRs): main\n\nGit user: Chan Ik Park\n\nStatus:\n(clean)\n\nRecent commits:\nb461519 Refs #36560, CVE-2026-35193 -- Recognized qualified cache-control directives.\n2c5e4af Fixed #37165 -- Updated Async Support topics doc.\nf2f5228 Added CI workflow to expand geospatial library version coverage.\ne877e21 Refs #373 -- Updated FAQ page with partial composite primary key support.\n189c2d2 Fixed #37164 -- Supported subclasses\u2019 _get_lines() in jsonl Deserializer."
+  },
+  "tokens": {
+    "input_tokens": 1,
+    "output_tokens": 152,
+    "cache_creation_input_tokens": 382,
+    "cache_read_input_tokens": 3007
+  },
+  "cost": {
+    "input_cost": 3e-06,
+    "output_cost": 0.00228,
+    "cache_write_cost": 0.0014325,
+    "cache_read_cost": 0.0009021,
+    "total_cost": 0.0046176
+  },
+  "context": {
+    "occupancy_pct": 1.7,
+    "num_turns": 3,
+    "per_message_lengths": [
+      {
+        "role": "user",
+        "length": 4413
+      },
+      {
+        "role": "assistant",
+        "length": 751
+      },
+      {
+        "role": "user",
+        "length": 786
+      }
+    ]
+  },
+  "tools": [
+    {
+      "index": 0,
+      "id": "toolu_018V8qtufVnbgs4ijnsuBaCz",
+      "name": "Bash",
+      "input": {
+        "command": "grep -n \"check_filterable\" /Users/chanikpark/Aegis-ATV/bench_log/logs/session_swebench-django__django-13028_bed9bcc9/workspace/swebench_workspaces/django__django-13028/django/db/models/sql/query.py",
+        "description": "Find check_filterable in query.py"
+      },
+      "result": {
+        "content": "1402:    def check_filterable(self, expression):\n1413:                self.check_filterable(expr)\n1496:        check_filterable=True,\n1535:                check_filterable=check_filterable,\n1553:        if check_filterable:\n1554:            self.check_filterable(reffed_expression)\n1565:        if check_filterable:\n1566:            self.check_filterable(value)\n1700:        check_filterable=True,\n1720:                check_filterable=check_filterable,",
+        "is_error": false
+      }
+    }
+  ],
+  "performance": {
+    "latency_ms": 2512.3,
+    "stop_reason": "tool_use"
+  },
+  "conversation": {
+    "messages": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "text",
+            "text": "<system-reminder>\nAs you answer the user's questions, you can use the following context:\n# currentDate\nToday's date is 2026-06-21.\n\n      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.\n</system-reminder>\n\n"
+          },
+          {
+            "type": "text",
+            "text": "Fix the following issue in the django/django repository.\n\n## Issue\nQueryset raises NotSupportedError when RHS has filterable=False attribute.\nDescription\n\t \n\t\t(last modified by Nicolas Baccelli)\n\t \nI'm migrating my app to django 3.0.7 and I hit a strange behavior using a model class with a field labeled filterable\nclass ProductMetaDataType(models.Model):\n\tlabel = models.CharField(max_length=255, unique=True, blank=False, null=False)\n\tfilterable = models.BooleanField(default=False, verbose_name=_(\"filterable\"))\n\tclass Meta:\n\t\tapp_label = \"adminpricing\"\n\t\tverbose_name = _(\"product meta data type\")\n\t\tverbose_name_plural = _(\"product meta data types\")\n\tdef __str__(self):\n\t\treturn self.label\nclass ProductMetaData(models.Model):\n\tid = models.BigAutoField(primary_key=True)\n\tproduct = models.ForeignKey(\n\t\tProduit, null=False, blank=False, on_delete=models.CASCADE\n\t)\n\tvalue = models.TextField(null=False, blank=False)\n\tmarketplace = models.ForeignKey(\n\t\tPlateforme, null=False, blank=False, on_delete=models.CASCADE\n\t)\n\tdate_created = models.DateTimeField(null=True, default=timezone.now)\n\tmetadata_type = models.ForeignKey(\n\t\tProductMetaDataType, null=False, blank=False, on_delete=models.CASCADE\n\t)\n\tclass Meta:\n\t\tapp_label = \"adminpricing\"\n\t\tverbose_name = _(\"product meta data\")\n\t\tverbose_name_plural = _(\"product meta datas\")\nError happened when filtering ProductMetaData with a metadata_type :\nProductMetaData.objects.filter(value=\"Dark Vador\", metadata_type=self.brand_metadata)\nError traceback :\nTraceback (most recent call last):\n File \"/backoffice/backoffice/adminpricing/tests/test_pw.py\", line 481, in test_checkpolicywarning_by_fields\n\tfor p in ProductMetaData.objects.filter(\n File \"/usr/local/lib/python3.8/site-packages/django/db/models/manager.py\", line 82, in manager_method\n\treturn getattr(self.get_queryset(), name)(*args, **kwargs)\n File \"/usr/local/lib/python3.8/site-packages/django/db/models/query.py\", line 904, in filter\n\treturn self._filter_or_exclude(False, *args, **kwargs)\n File \"/usr/local/lib/python3.8/site-packages/django/db/models/query.py\", line 923, in _filter_or_exclude\n\tclone.query.add_q(Q(*args, **kwargs))\n File \"/usr/local/lib/python3.8/site-packages/django/db/models/sql/query.py\", line 1351, in add_q\n\tclause, _ = self._add_q(q_object, self.used_aliases)\n File \"/usr/local/lib/python3.8/site-packages/django/db/models/sql/query.py\", line 1378, in _add_q\n\tchild_clause, needed_inner = self.build_filter(\n File \"/usr/local/lib/python3.8/site-packages/django/db/models/sql/query.py\", line 1264, in build_filter\n\tself.check_filterable(value)\n File \"/usr/local/lib/python3.8/site-packages/django/db/models/sql/query.py\", line 1131, in check_filterable\n\traise NotSupportedError(\ndjango.db.utils.NotSupportedError: ProductMetaDataType is disallowed in the filter clause.\nI changed label to filterable_test and it fixed this issue\nThis should be documented or fix.\n\n\n## Hints\nThanks for the report, that's a nice edge case. We should be able to fix this by checking if rhs is an expression: diff --git a/django/db/models/sql/query.py b/django/db/models/sql/query.py index ce18098fd2..ad981377a0 100644 --- a/django/db/models/sql/query.py +++ b/django/db/models/sql/query.py @@ -1124,7 +1124,7 @@ class Query(BaseExpression): def check_filterable(self, expression): \"\"\"Raise an error if expression cannot be used in a WHERE clause.\"\"\" - if not getattr(expression, 'filterable', True): + if hasattr(expression, 'resolve_expression') and not getattr(expression, 'filterable', True): raise NotSupportedError( expression.__class__.__name__ + ' is disallowed in the filter ' 'clause.' Would you like to provide a patch? Regression in 4edad1ddf6203326e0be4bdb105beecb0fe454c4.\nSure I will. I just need to read \u200bhttps://docs.djangoproject.com/en/dev/internals/contributing/\n\nPlease identify and fix the bug. Apply the fix directly to the repository files.\n"
+          }
+        ]
+      },
+      {
+        "role": "assistant",
+        "content": [
+          {
+            "type": "thinking",
+            "thinking": "Let me look at the relevant file and apply the fix.",
+            "signature": "EvsBCmUIDhgCKkCLelWLIYhgUqGq+RO41UxSmKjO5dYJ8lF+TxEJI2k0rRSRz/p50oc6ec8Cj0edKSkZoaHdFHx5+YKe7EJujErxMhFjbGF1ZGUtc29ubmV0LTQtNjgAQgh0aGlua2luZxIMN9xUdRE2ZuVaAPVcGgzm3s1aRGmWaUNmRa8iMF8GJjali2/tTp1J5UyqkXRZ2dnaSKLueftoYAjMQ9/KTzmavpDtHHkR7P77NKPp2ypE3gTEqVZayWYJge8dSVAOKmNqRS7ieKUnluW91UxnPZL2VntxSTwtuj1SfHhmj6Y3glXKkcxZ/47KPrxv/jt8DlzsFf8YAQ=="
+          },
+          {
+            "type": "tool_use",
+            "id": "toolu_01GKDrTuUNkM4JyUALdf5nG2",
+            "name": "Read",
+            "input": {
+              "file_path": "/Users/chanikpark/Aegis-ATV/bench_log/logs/session_swebench-django__django-13028_bed9bcc9/workspace/swebench_workspaces/django__django-13028/django/db/models/sql/query.py",
+              "offset": 1120,
+              "limit": 15
+            }
+          }
+        ]
+      },
+      {
+        "role": "user",
+        "content": [
+          {
+            "tool_use_id": "toolu_01GKDrTuUNkM4JyUALdf5nG2",
+            "type": "tool_result",
+            "content": "1120\t            self.ref_alias(alias)\n1121\t        elif self.model:\n1122\t            alias = self.join(self.base_table_class(self.get_meta().db_table, None))\n1123\t        else:\n1124\t            alias = None\n1125\t        return alias\n1126\t\n1127\t    def count_active_tables(self):\n1128\t        \"\"\"\n1129\t        Return the number of tables in this query with a non-zero reference\n1130\t        count. After execution, the reference counts are zeroed, so tables\n1131\t        added in compiler will not be seen by this method.\n1132\t        \"\"\"\n1133\t        return len([1 for count in self.alias_refcount.values() if count])\n1134\t",
+            "cache_control": {
+              "type": "ephemeral"
+            }
+          }
+        ]
+      }
+    ],
+    "assistant_response": ""
+  }
+}

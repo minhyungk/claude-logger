@@ -1,0 +1,32 @@
+All 59 tests pass. The fix for Django issue #12470 is correctly in place in the repository.
+
+## Summary of the Bug and Fix
+
+**The Bug:** When an inherited model (e.g., `Child`) inherits `ordering = ["-pk"]` from a parent model (`Parent`), querying `Child.objects.all()` was producing incorrect `ASC` ordering instead of `DESC`.
+
+**The Root Cause:** In `django/db/models/sql/compiler.py`'s `find_ordering_name` method, when processing `-pk` ordering for an inherited model:
+1. The `pk` shortcut resolved to a OneToOneField (the parent pointer)
+2. Since this field is a relation, and the related model also has `ordering = ["-pk"]`, the code was recursively resolving the ordering
+3. The recursive call passed `order="DESC"` as `default_order`
+4. When `get_order_dir("-pk", "DESC")` was called with `default_order="DESC"`, it returned `("pk", "ASC")` — the direction was **flipped**!
+
+**The Fix** in `django/db/models/sql/compiler.py`:
+
+The condition for recursive ordering resolution was updated to include `and name != "pk"`:
+
+```python
+if (
+    field.is_relation
+    and opts.ordering
+    and getattr(field, "attname", None) != pieces[-1]
+    and name != "pk"  # ← Prevents double-negation bug for pk shortcut
+    and not getattr(transform_function, "has_transforms", False)
+):
+```
+
+This prevents the incorrect recursion when ordering by the `pk` shortcut, ensuring the direction is preserved correctly.
+
+**The Test** in `tests/model_inheritance/tests.py` (`test_inherited_ordering_pk_desc`):
+- Creates two `Parent` objects (inheriting from `GrandParent` which has `ordering = ["-pk"]`)
+- Verifies they are returned in DESC order
+- Verifies the SQL uses `DESC` in the `ORDER BY` clause
